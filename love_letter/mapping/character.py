@@ -1,5 +1,5 @@
 from ..objects import *
-from ..rules import *
+from ..rules.character import *
 
 class LoveLetterCharacterMap():
     def __init__(self, character: LoveLetterCharacter, rule: LoveLetterCharacterRule, count: int):
@@ -7,43 +7,50 @@ class LoveLetterCharacterMap():
         self._rule: LoveLetterCharacterRule = rule
         self._count: int = count
     
-    def getCharacter(self) -> LoveLetterCharacter:
+    def get_character(self) -> LoveLetterCharacter:
         return self._character
     
-    def getRule(self) -> LoveLetterCharacterRule:
+    def get_rule(self) -> LoveLetterCharacterRule:
         return self._rule
     
-    def getCount(self) -> int:
+    def get_count(self) -> int:
         return self._count
-    
 
 class LoveLetterCharacterMapper():
     def __init__(self):
         self._characters: list[LoveLetterCharacterMap] = []
     
-    def addMap(self, map: LoveLetterCharacterMap):
+    def add_map(self, map: LoveLetterCharacterMap):
         self._characters.append(map)
     
-    def getMapByCharacter(self, character: LoveLetterCharacter):
+    def get_map_by_character(self, character: LoveLetterCharacter) -> LoveLetterCharacterMap:
         for data in self._characters:
-            if data.getCharacter() == character:
+            if data.get_character() == character:
                 return data
     
-    def getMapByRule(self, rule: LoveLetterCharacterRule):
+    def get_map_by_rule(self, rule: LoveLetterCharacterRule) -> LoveLetterCharacterMap:
         for data in self._characters:
             if data.getRule() == rule:
                 return data
     
+    def get_map_by_character_name(self, name: str) -> LoveLetterCharacterMap:
+        for data in self._characters:
+            if data.get_character().get_name() == name:
+                return data
+    
+    def get_all_maps(self) -> list[LoveLetterCharacterMap]:
+        return self._characters
+    
     def create_default_mapping():
         llmap = LoveLetterCharacterMapper()
-        llmap.addMap(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_GUARD, LOVE_LETTER_CHARACTER_GUARD_RULE, 5))
-        llmap.addMap(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_PRIEST, LOVE_LETTER_CHARACTER_GUARD_RULE, 2))
-        llmap.addMap(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_BARON, LOVE_LETTER_CHARACTER_GUARD_RULE, 2))
-        llmap.addMap(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_HANDMAID, LOVE_LETTER_CHARACTER_GUARD_RULE, 2))
-        llmap.addMap(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_PRINCE, LOVE_LETTER_CHARACTER_GUARD_RULE, 2))
-        llmap.addMap(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_KING, LOVE_LETTER_CHARACTER_GUARD_RULE, 1))
-        llmap.addMap(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_COUNTESS, LOVE_LETTER_CHARACTER_GUARD_RULE, 1))
-        llmap.addMap(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_PRINCESS, LOVE_LETTER_CHARACTER_GUARD_RULE, 2))
+        llmap.add_map(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_GUARD, LoveLetterGuardRule(), 5))
+        llmap.add_map(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_PRIEST, LoveLetterPriestRule(), 2))
+        llmap.add_map(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_BARON, LoveLetterBaronRule(), 2))
+        llmap.add_map(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_HANDMAID, LoveLetterHandMaidRule(), 2))
+        llmap.add_map(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_PRINCE, LoveLetterPrinceRule(), 2))
+        llmap.add_map(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_KING, LoveLetterKingRule(), 1))
+        llmap.add_map(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_COUNTESS, LoveLetterCountessRule(), 1))
+        llmap.add_map(LoveLetterCharacterMapper(LOVE_LETTER_CHARACTER_PRINCESS, LoveLetterPrincessRule(), 1))
 
 
 

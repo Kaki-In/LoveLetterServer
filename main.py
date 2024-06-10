@@ -1,4 +1,4 @@
-from .main_platform import *
+from main_platform import *
 import sys
 
 def main(args):

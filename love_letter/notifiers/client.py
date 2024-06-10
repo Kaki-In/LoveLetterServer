@@ -22,4 +22,3 @@ class LoveLetterClient():
     async def interact(self, message: ClientMessage) -> ClientResult:
         return ClientResult("", {})
     
-    

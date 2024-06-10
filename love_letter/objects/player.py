@@ -44,12 +44,19 @@ class LoveLetterPlayer:
 
     def get_discard(self) -> list[LoveLetterCard]:
         return self._discard
-
+    
+    def get_won_rounds(self) -> int:
+        return self._won_rounds
+    
     def take_card(self, card: LoveLetterCard) -> None:
         if self._drawn:
             raise ValueError("This player already has a drawn card in his hand")
         
-        self._drawn = card
+        if self._card is None:
+            self._card = card
+        else:
+            self._drawn = card
+        
         self._events[PLAYER_EVENT_CARDS].emit(self._drawn, self._card)
 
     def lay_card(self) -> None:
@@ -60,7 +67,7 @@ class LoveLetterPlayer:
         self._card = self._drawn
         self._drawn = None
         self._events[PLAYER_EVENT_CARDS].emit(self._drawn, self._card)
-
+    
     def lay_drawn_card(self) -> None:
         if self._drawn is None:
             raise ValueError("The player does not have any drawn card")

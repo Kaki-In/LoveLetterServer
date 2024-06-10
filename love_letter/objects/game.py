@@ -3,6 +3,7 @@ from .round import *
 
 import random as _random
 import events as _events
+import typing as _T
 
 GAME_EVENT_INITIALIZATION   = 0
 GAME_EVENT_NEW_ROUND        = 1
@@ -10,9 +11,12 @@ GAME_EVENT_RESULTS          = 2
 
 class LoveLetterGame():
     def __init__(self, *players: LoveLetterPlayer):
+        if len(players) < 2:
+            raise ValueError("two players or more are required to play this game")
+        
         self._players: tuple[LoveLetterPlayer, ...] = players
         
-        self._round: LoveLetterRound | None = None
+        self._round: _T.Optional[LoveLetterRound] = None
         
         self._events = _events.EventObject(
             GAME_EVENT_NEW_ROUND,
@@ -20,7 +24,7 @@ class LoveLetterGame():
             GAME_EVENT_RESULTS
         )
     
-    def players(self):
+    def get_players(self):
         return self._players
     
     def get_actual_round(self):

@@ -4,7 +4,7 @@ class LoveLetterCard():
     def __init__(self, character: LoveLetterCharacter):
         self._character: LoveLetterCharacter = character
         
-    def getCharacter(self) -> LoveLetterCharacter:
+    def get_character(self) -> LoveLetterCharacter:
         return self._character
     
     def __lt__(self, second_card: 'LoveLetterCard') -> bool:

@@ -4,13 +4,13 @@ class LoveLetterCharacter():
         self._description: str = description
         self._value: int = value
         
-    def name(self) -> str:
+    def get_name(self) -> str:
         return self._name
     
-    def description(self) -> str:
+    def get_description(self) -> str:
         return self._description
     
-    def value(self) -> int:
+    def get_value(self) -> int:
         return self._value
     
     def __lt__(self, second_character: 'LoveLetterCharacter') -> bool:
