@@ -8,11 +8,11 @@ class LoveLetterCard():
         return self._character
     
     def __lt__(self, second_card: 'LoveLetterCard') -> bool:
-        return self.getCharacter() < second_card.getCharacter()
+        return self.get_character() < second_card.get_character()
     
     def __gt__(self, second_card: 'LoveLetterCard') -> bool:
-        return self.getCharacter() > second_card.getCharacter()
+        return self.get_character() > second_card.get_character()
     
     def __eq__(self, second_card: 'LoveLetterCard') -> bool:
-        return self.getCharacter() == second_card.getCharacter()
+        return self.get_character() == second_card.get_character()
     

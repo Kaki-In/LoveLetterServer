@@ -14,13 +14,13 @@ class LoveLetterCharacter():
         return self._value
     
     def __lt__(self, second_character: 'LoveLetterCharacter') -> bool:
-        return self.value() < second_character.value()
+        return self.get_value() < second_character.get_value()
 
     def __gt__(self, second_character: 'LoveLetterCharacter') -> bool:
-        return self.value() > second_character.value()
+        return self.get_value() > second_character.get_value()
 
     def __eq__(self, second_character: 'LoveLetterCharacter') -> bool:
-        return self.value() == second_character.value()
+        return self.get_value() == second_character.get_value()
 
 LOVE_LETTER_CHARACTER_GUARD     = LoveLetterCharacter(1, "Garde"    , "Deviner la carte d'un joueur")
 LOVE_LETTER_CHARACTER_PRIEST    = LoveLetterCharacter(2, "Prêtre"   , "Regarder la carte d'un joueur")

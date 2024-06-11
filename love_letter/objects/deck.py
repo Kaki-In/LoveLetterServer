@@ -1,6 +1,5 @@
 from .card import *
 from .character import *
-from ..mapping import *
 
 import random as _random
 import events as _events
@@ -19,7 +18,9 @@ class LoveLetterDeck():
     
     def take_card(self) -> LoveLetterCard:
         card = self._cards.pop()
-        self._events[ DECK_EVENT_TOOK ].emit(card)
+
+#        self._events[ DECK_EVENT_TOOK ].emit(card)
+
         return card
     
     def __len__(self) -> int:

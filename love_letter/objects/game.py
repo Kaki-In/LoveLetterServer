@@ -33,7 +33,12 @@ class LoveLetterGame():
     def get_events(self):
         return self._events
     
-    def init_new_round(self):
-        self._round = LoveLetterRound(self._players, _random.randrange(len(self._players)))
+    def init_new_round(self, deck: LoveLetterDeck):
+        if self._round:
+            actual_winner = _random.choice(self._round.get_winners())
+        else:
+            actual_winner = _random.choice(self._players)
+        
+        self._round = LoveLetterRound(self._players, self._players.index(actual_winner), deck)
         
         self._events[ GAME_EVENT_INITIALIZATION ].emit()

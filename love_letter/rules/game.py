@@ -17,7 +17,7 @@ class LoveLetterGameRules():
         deck = LoveLetterDeck()
         
         for map in self._mapper.get_all_maps():
-            for count in map.get_count():
+            for count in range(map.get_count()):
                 deck.add_card(LoveLetterCard(map.get_character()))
         
         return deck
@@ -33,7 +33,7 @@ class LoveLetterGameRules():
         
         players_number = len(players)
         
-        max_points = [6, 5, 4][ players_number + 2 ]
+        max_points = [6, 5, 4][ players_number - 2 ]
         
         for player in players:
             if player.get_won_rounds() >= max_points:
@@ -42,10 +42,10 @@ class LoveLetterGameRules():
         return False
     
     async def main_game(self, game: LoveLetterGame) -> _T.NoReturn:
-        while not self.is_finished():
-            game.init_new_round()
+        while not self.is_finished(game):
+            game.init_new_round(self.create_new_deck())
             
-            await self._rounds_rule.main_round(game.get_actual_round())
+            await self._rounds_rule.main_round(self._mapper, self._notifier, game.get_actual_round())
         
 
 

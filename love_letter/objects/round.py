@@ -9,12 +9,8 @@ class LoveLetterRound():
         self._deck = deck
         self._player_turn: int = player_turn
         
-        self._hidden_card: LoveLetterCard | None = self._deck.takeCard()
+        self._hidden_card: LoveLetterCard | None = self._deck.take_card()
         self._remove_cards: list[LoveLetterCard] = list()
-        
-        if len(players) == 2:
-            for _ in range(3):
-                self._remove_cards.append(self._deck.takeCard())
     
     def get_players(self) -> tuple[LoveLetterPlayer, ...]:
         return self._players
@@ -52,6 +48,12 @@ class LoveLetterRound():
             if player.get_id() == id:
                 return player
     
+    def set_hidden_card(self, card: LoveLetterCard) -> _T.NoReturn:
+        self._hidden_card = card
+    
+    def add_removed_card(self, card: LoveLetterCard) -> _T.NoReturn:
+        self._remove_cards.append(card)
+    
     def draw(self) -> LoveLetterCard:
         if len(self._deck):
             return self._deck.take_card()
@@ -61,6 +63,28 @@ class LoveLetterRound():
     def select_next_player(self):
         while True:
             self._player_turn = ( self._player_turn + 1 ) % len(self._players)
-            
+            if not self.get_active_player().is_eliminated():
+                break
+    
+    def get_winners(self) -> list[LoveLetterPlayer]:
+        if len(self.get_alive_players()) == 1:
+            return self.get_alive_players()
+        
+        if len(self._deck) > 0:
+            return []
+        
+        max_card = 0
+        for player in self._players:
+            value = player.get_card().get_character().get_value()
+            if value > max_card:
+                max_card = value
+        
+        l = []
+        
+        for player in self._players:
+            if player.get_card().get_character().get_value() == max_card:
+                l.append(player)
+        
+        return l
     
 

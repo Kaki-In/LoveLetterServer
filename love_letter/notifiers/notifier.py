@@ -55,7 +55,7 @@ class LoveLetterNotifier(Notifier):
     
     async def display_card(self, player: LoveLetterPlayer, card: LoveLetterCard, reason: ClientReason) -> _T.NoReturn:
         message = ClientMessage(LOVE_LETTER_MESSAGE_DISPLAY_CARD,{
-            'character' : card.getCharacter().name(),
+            'character' : card.get_character().get_name(),
             'reason'    : reason.toJson()
         })
         
@@ -71,7 +71,7 @@ class LoveLetterNotifier(Notifier):
         })
         
         client = self.get_client_by_player(player)
-        await client.interact(message)
+        return await client.interact(message)
     
     async def choose_character(self, player: LoveLetterPlayer, reason: ClientReason) ->  ClientResult:
         message = ClientMessage(LOVE_LETTER_MESSAGE_CHOOSE_CHARACTER, {
@@ -79,14 +79,14 @@ class LoveLetterNotifier(Notifier):
         })
         
         client = self.get_client_by_player(player)
-        await client.interact(message)
+        return await client.interact(message)
     
     async def choose_card_to_play(self, player: LoveLetterPlayer) -> ClientResult:
         card = player.get_card()
         drawn_card = player.get_drawn_card()
         message = ClientMessage(LOVE_LETTER_MESSAGE_CHOOSE_CARD_TO_PLAY, {
-            'card'       : card.getCharacter().name(),
-            'drawn_card' : drawn_card.getCharacter().name()
+            'card'       : card.get_character().get_name(),
+            'drawn_card' : drawn_card.get_character().get_name()
         })
         
         client = self.get_client_by_player(player)
@@ -135,7 +135,7 @@ class LoveLetterNotifier(Notifier):
         await client.interact(message)
     
     async def confirm_unsafe_message(self, player: LoveLetterPlayer, reason: ClientReason) -> ClientResult:
-        message = ClientMessage(LOVE_LETTER_MESSAGE_DISPLAY_UNSAFE, {
+        message = ClientMessage(LOVE_LETTER_MESSAGE_CONFIRM_UNSAFE, {
             'reason'    : reason.toJson()
         })
         

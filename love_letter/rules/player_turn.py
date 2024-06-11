@@ -1,5 +1,3 @@
-import re
-from ..mapping import *
 from ..notifiers import *
 from ..objects import *
 
@@ -11,8 +9,10 @@ class LoveLetterPlayerTurnRule():
     def __init__(self):
         pass
     
-    async def play(self, mapper: LoveLetterCharacterMapper, notifier: LoveLetterNotifier, round: LoveLetterRound) -> _T.NoReturn:
+    async def play(self, mapper: 'LoveLetterCharacterMapper', notifier: LoveLetterNotifier, round: LoveLetterRound) -> _T.NoReturn:
         player = round.get_active_player()
+        
+        player.take_card(round.draw())
         
         if player.is_protected():
             player.stop_protection()
@@ -22,15 +22,17 @@ class LoveLetterPlayerTurnRule():
         while not confirmed:
             card_result = await notifier.choose_card_to_play(player)
             
-            if card_result[ "card" ] == "hand_card":
+            if card_result.get_args()[ "card" ] == "hand_card":
                 card = player.get_card()
             else:
                 card = player.get_drawn_card()
             
+            print(card.get_character().get_name())
+            
             card_map = mapper.get_map_by_character( card.get_character() )
             card_rule = card_map.get_rule()
             
-            safe_state = card_rule.can_be_safely_laid(mapper, notifier, round)
+            safe_state = await card_rule.can_be_safely_laid(mapper, notifier, round)
             
             if safe_state == LOVE_LETTER_CHARACTER_RULE_SAFE:
                 confirmed = True
@@ -45,6 +47,19 @@ class LoveLetterPlayerTurnRule():
                     answer = await notifier.confirm_unsafe_message(player, reason)
                     confirmed = answer.get_args()[ "confirmed" ]
         
-        await card_rule.execute_on_player_turn(notifier, round)
+        if card_result.get_args()[ "card" ] == "hand_card":
+            player.lay_card()
+        else:
+            player.lay_drawn_card()
+        
+        await card_rule.execute_on_player_turn(mapper, notifier, round)
+        print("Done")
+    
+    async def make_player_discard(self, mapper: 'LoveLetterCharacterMapper', notifier: LoveLetterNotifier, round: LoveLetterRound, player: LoveLetterPlayer) -> _T.NoReturn:
+        card = player.get_card()
+        player.lay_card()
+        
+        map = mapper.get_map_by_character( card.get_character() )
+        await map.get_rule().execute_on_discarded(mapper, notifier, round, player)
     
 

@@ -49,6 +49,7 @@ class LoveLetterPlayer:
         return self._won_rounds
     
     def take_card(self, card: LoveLetterCard) -> None:
+        print("Player", self._id, "takes card", card.get_character().get_name())
         if self._drawn:
             raise ValueError("This player already has a drawn card in his hand")
         
@@ -60,6 +61,7 @@ class LoveLetterPlayer:
         self._events[PLAYER_EVENT_CARDS].emit(self._drawn, self._card)
 
     def lay_card(self) -> None:
+        print("Player", self._id, "lays card")
         if self._card is None:
             raise ValueError("The player does not have any card")
         
@@ -69,6 +71,7 @@ class LoveLetterPlayer:
         self._events[PLAYER_EVENT_CARDS].emit(self._drawn, self._card)
     
     def lay_drawn_card(self) -> None:
+        print("Player", self._id, "lays drawn card")
         if self._drawn is None:
             raise ValueError("The player does not have any drawn card")
         
@@ -77,26 +80,32 @@ class LoveLetterPlayer:
         self._events[PLAYER_EVENT_CARDS].emit(self._drawn, self._card)
 
     def eliminate(self) -> None:
+        print("Player", self._id, "has been eliminated")
         self._is_eliminated = True
         self._events[PLAYER_EVENT_ELIMINATION].emit(True)
 
     def cancel_elimination(self) -> None:
+        print("Player", self._id, "has risen")
         self._is_eliminated = False
         self._events[PLAYER_EVENT_ELIMINATION].emit(False)
 
     def protect(self) -> None:
+        print("Player", self._id, "has been protected")
         self._is_protected = True
         self._events[PLAYER_EVENT_PROTECTION].emit(True)
 
     def stop_protection(self) -> None:
+        print("Player", self._id, "is no longer protected")
         self._is_protected = False
         self._events[PLAYER_EVENT_PROTECTION].emit(False)
 
     def save_round_won(self):
+        print("Player", self._id, "Won a game")
         self._won_rounds += 1
         self._events[PLAYER_EVENT_ROUND_WON].emit(self._won_rounds)
 
     def initialize_for_round(self) -> None:
+        print("Player", self._id, "initializes his game")
         self._card = None
         self._drawn = None
         self._is_protected = False
