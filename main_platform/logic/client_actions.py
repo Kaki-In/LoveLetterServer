@@ -51,8 +51,6 @@ class ClientMainActions(ClientActions):
         self.add_sub_action('table_action', ClientTableActions())
     
     async def join_random_table(self, client: Client, world: World) -> None:
-        from .client import ClientLogic
-        
         tables = world.get_tables().get_waiting_tables()
         
         if tables:
@@ -69,11 +67,9 @@ class ClientMainActions(ClientActions):
                 }
             }
             
-            ClientLogic().send(client, _json.dumps(data).encode() )
+            client.get_socket().send( _json.dumps(data).encode() )
         
     async def join_named_table(self, client: Client, world: World, name: str) -> None:
-        from .client import ClientLogic
-        
         table = world.get_tables().get_table_by_name(name)
         
         if table is None:
@@ -87,7 +83,7 @@ class ClientMainActions(ClientActions):
                 }
             }
             
-            ClientLogic().send(client, _json.dumps(data).encode() )
+            client.get_socket().send( _json.dumps(data).encode() )
         
         else:
             table.add_ghost(client)
@@ -108,8 +104,6 @@ class ClientTableActions(ClientActions):
         super().__init__()
     
     async def enter_in_game(self, client: Client, world: World) -> None:
-        from .client import ClientLogic
-        
         table = world.get_tables().get_table_by_client(client)
         
         logic = TableLogic()
@@ -127,7 +121,7 @@ class ClientTableActions(ClientActions):
                     }
                 }
                 
-                ClientLogic().send(client, _json.dumps(data).encode() )
+                client.get_socket().send( _json.dumps(data).encode() )
         else:
             data = {
                 'name': "table.enter_game.error",
@@ -138,8 +132,6 @@ class ClientTableActions(ClientActions):
             }
     
     async def exit_game(self, client: Client, world: World) -> None:
-        from .client import ClientLogic
-        
         table = world.get_tables().get_table_by_client(client)
         
         logic = TableLogic()
@@ -157,7 +149,7 @@ class ClientTableActions(ClientActions):
                     }
                 }
                 
-                ClientLogic().send(client, _json.dumps(data).encode() )
+                client.get_socket().send( _json.dumps(data).encode() )
         else:
             data = {
                 'name': "table.enter_game.error",
@@ -167,5 +159,5 @@ class ClientTableActions(ClientActions):
                 }
             }
             
-            ClientLogic().send(client, _json.dumps(data).encode() )
+            client.get_socket().send( _json.dumps(data).encode() )
     

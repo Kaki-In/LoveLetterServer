@@ -9,8 +9,11 @@ class ServerLogic():
     def __init__(self):
         pass
     
-    async def init_connection(self, server: Server):
-        bind = await _asyncio.get_event_loop().create_server(lambda reader, writer : self.accept_client(server, world, reader, writer), server.get_host_name(), server.get_port())
+    def init_connection(self, server: Server):
+        bind = server._context.wrap_socket(_socket.socket(), server_side=True)
+        bind.settimeout( 1 )
+        bind.bind((server.get_host_name(), server.get_port()))
+        bind.listen( 1000 )
         
         server.set_binding_connection(bind)
     
@@ -18,14 +21,19 @@ class ServerLogic():
         return False
     
     async def main(self, server: Server, world: World) -> None:
-        await self.init_connection(server)
+        self.init_connection(server)
         
-        await server.get_binding_connection().serve_forever()
+        try:
+            while not self.should_stop():
+                await self.accept_client(server, world)
+        finally:
+            await self.exit(server)
     
-    async def accept_client(self, server: Server, world: World, reader: _asyncio.StreamReader, writer: _asyncio.StreamWriter) -> None:
+    async def accept_client(self, server: Server, world: World) -> None:
         loop = _asyncio.get_event_loop()
         try:
-            client = server.get_clients().create_new_client(reader, writer)
+            conn, address = server.get_binding_connection().accept()
+            client = server.get_clients().create_new_client(conn, address)
             
             loop.create_task(self.main_client(server, client, world))
             

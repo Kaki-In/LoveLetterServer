@@ -40,7 +40,9 @@ class ClientLogic():
                 pass
     
     async def receive_message(self, client: Client) -> str:
-        message = await self.read(client)
+        loop = _asyncio.get_event_loop()
+        
+        message = await loop.sock_recv(client.get_socket(), 1024)
         
         return message.decode()
     
@@ -54,7 +56,7 @@ class ClientLogic():
             }
         }
         
-        self.send(client, _json.dumps(data).encode())
+        client.get_socket().send( _json.dumps(data).encode() )
     
     async def main_game_client_interaction(self, client: Client, game_client : DistantClient):
         id, message = game_client.get_next_interaction()
@@ -67,12 +69,5 @@ class ClientLogic():
             }
         }
         
-        self.send(client, _json.dumps(data).encode())
-    
-    async def read(self, client: Client) -> bytes:
-        return await client.get_reader().read()
-    
-    def send(self, client: Client, data: bytes) -> None:
-        client.get_writer().write(data)
-    
+        client.get_socket().send( _json.dumps(data).encode() )
     

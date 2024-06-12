@@ -2,7 +2,6 @@ from .clients import *
 
 import ssl as _ssl
 import typing as _T
-import asyncio as _asyncio
 
 class Server():
     def __init__(self, host: str, port: int, context: _ssl.SSLContext):
@@ -10,7 +9,7 @@ class Server():
         self._port: int = port
         self._context: _ssl.SSLContext = context
         
-        self._bind: _T.Optional[_asyncio.Server] = None
+        self._bind: _T.Optional[_ssl.SSLSocket] = None
         
         self._clients: ClientsList = ClientsList()
     
@@ -26,17 +25,16 @@ class Server():
     def get_clients(self) -> ClientsList:
         return self._clients
     
-    def from_server_name(host: str, port: int, *server_names: str) -> 'Server':
+    def from_server_name(self, host: str, port: int, *server_names: str) -> 'Server':
         context = _ssl.SSLContext(_ssl.PROTOCOL_TLS_SERVER)
-        
         for server_name in server_names:
             context.load_cert_chain(f'/etc/letsencrypt/live/{server_name}/fullchain.pem', f'/etc/letsencrypt/live/{server_name}/privkey.pem')
         
         return Server(host, port, context)
     
-    def set_binding_connection(self, bind: _asyncio.Server) -> None:
+    def set_binding_connection(self, bind: _ssl.SSLSocket) -> None:
         self._bind = bind
     
-    def get_binding_connection(self) -> _T.Optional[_asyncio.Server]:
+    def get_binding_connection(self) -> _T.Optional[_ssl.SSLSocket]:
         return self._bind
     
