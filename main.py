@@ -56,7 +56,7 @@ async def test(args):
 
 async def main(args):
     world = World()
-    server = Server("localhost", 40000, _ssl._create_unverified_context())
+    server = Server("localhost", 40000, _ssl._create_unverified_context(), ssl = False)
     
     logic = ServerLogic()
     

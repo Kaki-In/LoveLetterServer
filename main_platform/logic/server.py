@@ -9,8 +9,12 @@ class ServerLogic():
     def __init__(self):
         pass
     
-    def init_connection(self, server: Server):
-        bind = server._context.wrap_socket(_socket.socket(), server_side=True)
+    def init_connection(self, server: Server) -> None:
+        if server.is_ssl():
+            bind = server._context.wrap_socket(_socket.socket(), server_side=True)
+        else:
+            bind = _socket.socket()
+            
         bind.settimeout( 1 )
         bind.bind((server.get_host_name(), server.get_port()))
         bind.listen( 1000 )

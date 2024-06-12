@@ -9,9 +9,9 @@ import love_letter as _love_letter
 import promisio as _promisio
 
 class Client():
-    def __init__(self, id: int, connection: _ssl.SSLSocket, address):
+    def __init__(self, id: int, connection: _ssl.SSLSocket | _socket.socket, address):
         self._id: int = id
-        self._socket: _ssl.SSLSocket = connection
+        self._socket: _ssl.SSLSocket | _socket.socket = connection
         
         self._client: DistantClient = DistantClient()
         
@@ -20,7 +20,7 @@ class Client():
     def get_id(self) -> int:
         return self._id
     
-    def get_socket(self) -> _ssl.SSLSocket:
+    def get_socket(self) -> _ssl.SSLSocket | _socket.socket:
         return self._socket
     
     def get_game_client(self) -> DistantClient:

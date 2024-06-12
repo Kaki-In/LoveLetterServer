@@ -1,17 +1,24 @@
 from .clients import *
 
 import ssl as _ssl
+import socket as _socket
 import typing as _T
 
 class Server():
-    def __init__(self, host: str, port: int, context: _ssl.SSLContext):
+    def __init__(self, host: str, port: int, context: _ssl.SSLContext, ssl: bool = True):
         self._host: str = host
         self._port: int = port
+        
+        self._ssl_mode: bool = ssl
+        
         self._context: _ssl.SSLContext = context
         
-        self._bind: _T.Optional[_ssl.SSLSocket] = None
+        self._bind: _T.Optional[_ssl.SSLSocket | _socket.socket] = None
         
         self._clients: ClientsList = ClientsList()
+    
+    def is_ssl(self) -> bool:
+        return self._ssl_mode
     
     def get_host_name(self) -> str:
         return self._host
@@ -32,9 +39,9 @@ class Server():
         
         return Server(host, port, context)
     
-    def set_binding_connection(self, bind: _ssl.SSLSocket) -> None:
+    def set_binding_connection(self, bind: _ssl.SSLSocket | _socket.socket) -> None:
         self._bind = bind
     
-    def get_binding_connection(self) -> _T.Optional[_ssl.SSLSocket]:
+    def get_binding_connection(self) -> _T.Optional[_ssl.SSLSocket | _socket.socket]:
         return self._bind
     
