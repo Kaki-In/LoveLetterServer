@@ -2,6 +2,8 @@ import random as _random
 
 from .table import *
 
+import typing as _T
+
 class TablesList():
     def __init__(self):
         self._tables: dict[str, Table] = {}
@@ -24,4 +26,20 @@ class TablesList():
     
     def get_table_by_name(self, name: str) -> Table:
         return self._tables[ name ]
+    
+    def get_waiting_tables(self) -> list[Table]:
+        tables = []
+        for table_id in self._tables:
+            table = self._tables[table_id]
+            if table.get_state() == TABLE_STATE_WAITING:
+                tables.append(table)
+        
+        return tables
+    
+    def get_table_by_client(self, client: Client) -> _T.Optional[Table]:
+        for table_id in self._tables:
+            table = self._tables[table_id]
+            
+            if client in table.get_ghosts() + table.get_players():
+                return table
     

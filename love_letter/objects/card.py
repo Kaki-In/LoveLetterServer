@@ -16,3 +16,7 @@ class LoveLetterCard():
     def __eq__(self, second_card: 'LoveLetterCard') -> bool:
         return self.get_character() == second_card.get_character()
     
+    def toJson(self):
+        return {
+            'character_name': self._character.get_name()
+        }

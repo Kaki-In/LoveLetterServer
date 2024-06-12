@@ -42,3 +42,15 @@ class LoveLetterGame():
         self._round = LoveLetterRound(self._players, self._players.index(actual_winner), deck)
         
         self._events[ GAME_EVENT_INITIALIZATION ].emit()
+    
+    def toJson(self):
+        round_json = None
+        
+        if self._round is not None:
+            round_json = self._round.toJson()
+        
+        return {
+            'players': [player.toJson() for player in self._players],
+            'round': round_json,
+        }
+    

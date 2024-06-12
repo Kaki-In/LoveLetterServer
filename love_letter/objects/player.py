@@ -9,7 +9,7 @@ PLAYER_EVENT_ROUND_WON = 4
 PLAYER_EVENT_INITIALIZATION = 5
 
 class LoveLetterPlayer:
-    def __init__(self, player_id: int):
+    def __init__(self, player_id: int, name: str):
         self._id: int = player_id
         self._card: LoveLetterCard | None = None
         self._drawn: LoveLetterCard | None = None
@@ -17,6 +17,7 @@ class LoveLetterPlayer:
         self._is_eliminated: bool = False
         self._discard: list[LoveLetterCard] = []
         self._won_rounds: int = 0
+        self._name: str = name
         
         self._events: _events.EventObject = _events.EventObject(
             PLAYER_EVENT_CARDS,
@@ -26,6 +27,9 @@ class LoveLetterPlayer:
             PLAYER_EVENT_ROUND_WON,
             PLAYER_EVENT_INITIALIZATION
         )
+    
+    def get_name(self) -> str:
+        return self._name
 
     def get_id(self) -> int:
         return self._id
@@ -116,4 +120,26 @@ class LoveLetterPlayer:
     
     def get_events(self) -> _events.EventObject:
         return self._events
+    
+    def toJson(self):
+        card_json = None
+        
+        if self._card is not None:
+            card_json = self._card.toJson()
+        
+        drawn_card_json = None
+        
+        if self._drawn is not None:
+            drawn_card_json = self._drawn.toJson()
+        
+        return {
+            'id': self._id,
+            'card': card_json,
+            'drawn_card': drawn_card_json,
+            'is_protected': self._is_protected, 
+            'id_eliminated': self._is_eliminated,
+            'discard': [card.get_character().get_name() for card in self._discard],
+            'won_rounds': self._won_rounds,
+            'name': self._name
+        }
     

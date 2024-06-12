@@ -1,6 +1,7 @@
 from .client import *
 
 import typing as _T
+import asyncio as _asyncio
 
 class ClientsList():
     def __init__(self):
@@ -10,11 +11,11 @@ class ClientsList():
     def get_client_by_id(self, id: int) -> Client:
         return self._clients[ id ]
     
-    def create_new_client(self, socket, address):
+    def create_new_client(self, reader: _asyncio.StreamReader, writer: _asyncio.StreamWriter) -> Client:
         cid = self._last_id
         self._last_id += 1
         
-        client = Client(cid, socket, address)
+        client = Client(cid, reader, writer)
         
         self._clients[ cid ] = client
         
@@ -25,3 +26,4 @@ class ClientsList():
     
     def __iter__(self) -> _T.Iterator[Client]:
         return iter([self._clients[ id ] for id in self._clients])
+    

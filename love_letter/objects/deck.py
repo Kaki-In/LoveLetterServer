@@ -25,3 +25,9 @@ class LoveLetterDeck():
     
     def __len__(self) -> int:
         return len(self._cards)
+    
+    def toJson(self):
+        return {
+            'cards': [card.toJson() for card in self._cards]
+        }
+    

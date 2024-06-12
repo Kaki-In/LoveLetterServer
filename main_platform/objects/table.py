@@ -17,6 +17,26 @@ class Table():
         self._ghosts: list[Client] = []
         self._players: list[Client] = []
     
+    def add_ghost(self, ghost: Client) -> None:
+        self._ghosts.append(ghost)
+    
+    def remove_ghost(self, ghost: Client) -> None:
+        self._ghosts.remove(ghost)
+    
+    def set_ghost_as_player(self, ghost: Client) -> None:
+        if not ghost in self._ghosts:
+            raise ReferenceError("no such ghost")
+        
+        self._ghosts.remove(ghost)
+        self._players.append(ghost)
+    
+    def set_player_as_ghost(self, player: Client) -> None:
+        if not player in self._players:
+            raise ReferenceError("no such ghost")
+        
+        self._players.remove(player)
+        self._ghosts.append(player)
+    
     def get_ghosts(self) -> list[Client]:
         return self._ghosts
     
@@ -35,4 +55,16 @@ class Table():
     def set_game(self, game: _love_letter.LoveLetterGame) -> None:
         self._game = game
     
+    def toJson(self):
+        game_json = None
+        
+        if self._game is not None:
+            game_json = self._game.toJson()
+        
+        return {
+            'state': self._state,
+            'game': game_json,
+            'ghosts_number': len(self._ghosts),
+            'players': [player.toJson() for player in self._players]
+        }
     

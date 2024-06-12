@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 
-# from main_platform import *
+from main_platform import *
 from love_letter import *
 import sys
 import json
 import asyncio
+import ssl as _ssl
 
 class LocalClient(LoveLetterClient):
     def __init__(self):
@@ -32,12 +33,12 @@ class LocalClient(LoveLetterClient):
         
         return ClientResult(result["name"], result["args"])
 
-async def main(args):
+async def test(args):
     client1 = LocalClient()
     client2 = LocalClient()
     
-    player1 = LoveLetterPlayer(0)
-    player2 = LoveLetterPlayer(1)
+    player1 = LoveLetterPlayer(0, "Bob")
+    player2 = LoveLetterPlayer(1, "Bill")
     
     notifier = LoveLetterNotifier()
     notifier.plug_client_with_player(client1, player1)
@@ -50,6 +51,16 @@ async def main(args):
     rule = LoveLetterGameRules(notifier, mapper)
     
     await rule.main_game(game)
+    
+    return 0
+
+async def main(args):
+    world = World()
+    server = Server("localhost", 40000, _ssl._create_unverified_context())
+    
+    logic = ServerLogic()
+    
+    await logic.main(server, world)
     
     return 0
 

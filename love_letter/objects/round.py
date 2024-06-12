@@ -90,4 +90,13 @@ class LoveLetterRound():
         
         return l
     
+    def toJson(self):
+        return {
+            'players': [player.toJson() for player in self._players],
+            'deck': self._deck.toJson(),
+            'player_turn': self._player_turn,
+            'removed_cards': [card.toJson() for card in self._remove_cards],
+            'hidden_card': self._hidden_card is None
+        }
+    
 
