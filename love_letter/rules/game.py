@@ -41,7 +41,7 @@ class LoveLetterGameRules():
         
         return False
     
-    async def main_game(self, game: LoveLetterGame) -> _T.NoReturn:
+    async def main_game(self, game: LoveLetterGame) -> None:
         while not self.is_finished(game):
             game.init_new_round(self.create_new_deck())
             

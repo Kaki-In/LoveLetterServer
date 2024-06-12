@@ -14,7 +14,8 @@ LOVE_LETTER_MESSAGE_SET_PROTECTED               = "set_player.protected"
 LOVE_LETTER_MESSAGE_SET_ELIMINATED              = "set_player.eliminated"
 LOVE_LETTER_MESSAGE_COMPARE                     = "compare_cards"
 LOVE_LETTER_MESSAGE_CONFIRM_UNSAFE              = "unsafe_play.confirm"
-LOVE_LETTER_MESSAGE_DISPLAY_UNSAFE               = "unsafe_play.display"
+LOVE_LETTER_MESSAGE_DISPLAY_UNSAFE              = "unsafe_play.display"
+LOVE_LETTER_MESSAGE_CANCEL_GAME                 = "cancel_game"
 
 LOVE_LETTER_REASON_GUARD                        = "character.guard"
 LOVE_LETTER_REASON_PRIEST                       = "character.priest"
@@ -22,6 +23,7 @@ LOVE_LETTER_REASON_BARON                        = "character.baron"
 LOVE_LETTER_REASON_PRINCE                       = "character.prince"
 LOVE_LETTER_REASON_KING                         = "character.king"
 LOVE_LETTER_REASON_UNSAFE_PLAY                  = "unsafe_play"
+LOVE_LETTER_GAME_CRASHED                        = "game_crash"
 
 class Notifier():
     def __init__(self):
@@ -53,7 +55,7 @@ class LoveLetterNotifier(Notifier):
     def __init__(self):
         super().__init__()
     
-    async def display_card(self, player: LoveLetterPlayer, card: LoveLetterCard, reason: ClientReason) -> _T.NoReturn:
+    async def display_card(self, player: LoveLetterPlayer, card: LoveLetterCard, reason: ClientReason) -> None:
         message = ClientMessage(LOVE_LETTER_MESSAGE_DISPLAY_CARD,{
             'character' : card.get_character().get_name(),
             'reason'    : reason.toJson()
@@ -84,6 +86,7 @@ class LoveLetterNotifier(Notifier):
     async def choose_card_to_play(self, player: LoveLetterPlayer) -> ClientResult:
         card = player.get_card()
         drawn_card = player.get_drawn_card()
+        
         message = ClientMessage(LOVE_LETTER_MESSAGE_CHOOSE_CARD_TO_PLAY, {
             'card'       : card.get_character().get_name(),
             'drawn_card' : drawn_card.get_character().get_name()
@@ -94,7 +97,7 @@ class LoveLetterNotifier(Notifier):
         
         return result
     
-    async def update_player_protection(self, player: LoveLetterPlayer) -> _T.NoReturn:
+    async def update_player_protection(self, player: LoveLetterPlayer) -> None:
         message = ClientMessage(LOVE_LETTER_MESSAGE_SET_PROTECTED, {
             'player' : player.get_id(),
             'status' : player.is_protected()
@@ -103,9 +106,9 @@ class LoveLetterNotifier(Notifier):
         for client_id in self._clients:
             client = self._clients[ client_id ]
             
-            client.send_message(message)
+            await client.send_message(message)
     
-    async def set_player_as_eliminated(self, player: LoveLetterPlayer) -> _T.NoReturn:
+    async def set_player_as_eliminated(self, player: LoveLetterPlayer) -> None:
         message = ClientMessage(LOVE_LETTER_MESSAGE_SET_ELIMINATED, {
             'player' : player.get_id(),
         })
@@ -113,9 +116,9 @@ class LoveLetterNotifier(Notifier):
         for client_id in self._clients:
             client = self._clients[ client_id ]
             
-            client.send_message(message)
+            await client.send_message(message)
     
-    async def compare_cards(self, player1: LoveLetterPlayer, player2: LoveLetterPlayer, reason: ClientReason) -> _T.NoReturn:
+    async def compare_cards(self, player1: LoveLetterPlayer, player2: LoveLetterPlayer, reason: ClientReason) -> None:
         message = ClientMessage(LOVE_LETTER_MESSAGE_COMPARE, {
             'player1' : player1.get_id(),
             'player1_card' : player1.get_card().get_character().get_name(),
@@ -124,9 +127,9 @@ class LoveLetterNotifier(Notifier):
             'reason'  : reason.toJson()
         })
         
-        return await _asyncio.gather(self.interact_with_client(player1, message), self.interact_with_client(player2, message))
+        await _asyncio.gather(self.interact_with_client(player1, message), self.interact_with_client(player2, message))
     
-    async def display_unsafe_message(self, player: LoveLetterPlayer, reason: ClientReason) -> _T.NoReturn:
+    async def display_unsafe_message(self, player: LoveLetterPlayer, reason: ClientReason) -> None:
         message = ClientMessage(LOVE_LETTER_MESSAGE_DISPLAY_UNSAFE, {
             'reason'    : reason.toJson()
         })
@@ -141,6 +144,15 @@ class LoveLetterNotifier(Notifier):
         
         client = self.get_client_by_player(player)
         return await client.interact(message)
+    
+    async def cancel_game(self, reason: ClientReason) -> None:
+        message = ClientMessage(LOVE_LETTER_MESSAGE_CANCEL_GAME, {
+            "reason": reason
+        })
+        
+        for client_id in self._clients:
+            client = self._clients[ client_id ]
+            await client.send_message(message)
     
     
 

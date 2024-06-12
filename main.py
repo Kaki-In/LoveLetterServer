@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from main_platform import *
+# from main_platform import *
 from love_letter import *
 import sys
 import json

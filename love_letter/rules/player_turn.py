@@ -1,7 +1,7 @@
+from .character import *
+
 from ..notifiers import *
 from ..objects import *
-
-from .character import *
 
 import typing as _T
 
@@ -9,7 +9,7 @@ class LoveLetterPlayerTurnRule():
     def __init__(self):
         pass
     
-    async def play(self, mapper: 'LoveLetterCharacterMapper', notifier: LoveLetterNotifier, round: LoveLetterRound) -> _T.NoReturn:
+    async def play(self, mapper: 'LoveLetterCharacterMapper', notifier: LoveLetterNotifier, round: LoveLetterRound) -> None:
         player = round.get_active_player()
         
         player.take_card(round.draw())
@@ -55,7 +55,7 @@ class LoveLetterPlayerTurnRule():
         await card_rule.execute_on_player_turn(mapper, notifier, round)
         print("Done")
     
-    async def make_player_discard(self, mapper: 'LoveLetterCharacterMapper', notifier: LoveLetterNotifier, round: LoveLetterRound, player: LoveLetterPlayer) -> _T.NoReturn:
+    async def make_player_discard(self, mapper: 'LoveLetterCharacterMapper', notifier: LoveLetterNotifier, round: LoveLetterRound, player: LoveLetterPlayer) -> None:
         card = player.get_card()
         player.lay_card()
         

@@ -6,10 +6,10 @@ import typing as _T
 class LoveLetterRound():
     def __init__(self, players: tuple[LoveLetterPlayer, ...], player_turn: int, deck: LoveLetterDeck):
         self._players: tuple[LoveLetterPlayer, ...] = players
-        self._deck = deck
+        self._deck: LoveLetterDeck = deck
         self._player_turn: int = player_turn
         
-        self._hidden_card: LoveLetterCard | None = self._deck.take_card()
+        self._hidden_card: LoveLetterCard | None = None
         self._remove_cards: list[LoveLetterCard] = list()
     
     def get_players(self) -> tuple[LoveLetterPlayer, ...]:
@@ -43,20 +43,23 @@ class LoveLetterRound():
     def get_removed_cards(self) -> tuple[LoveLetterCard, ...]:
         return tuple(self._remove_cards)
     
-    def get_player_by_id(self, id: int) -> LoveLetterPlayer:
+    def get_player_by_id(self, id: int) -> _T.Optional[LoveLetterPlayer]:
         for player in self._players:
             if player.get_id() == id:
                 return player
     
-    def set_hidden_card(self, card: LoveLetterCard) -> _T.NoReturn:
+    def set_hidden_card(self, card: LoveLetterCard) -> None:
         self._hidden_card = card
     
-    def add_removed_card(self, card: LoveLetterCard) -> _T.NoReturn:
+    def add_removed_card(self, card: LoveLetterCard) -> None:
         self._remove_cards.append(card)
     
     def draw(self) -> LoveLetterCard:
         if len(self._deck):
             return self._deck.take_card()
+        
+        if self._hidden_card is None:
+            raise ValueError("no card to draw right now... ")
         
         return self._hidden_card
     
@@ -68,7 +71,7 @@ class LoveLetterRound():
     
     def get_winners(self) -> list[LoveLetterPlayer]:
         if len(self.get_alive_players()) == 1:
-            return self.get_alive_players()
+            return list(self.get_alive_players())
         
         if len(self._deck) > 0:
             return []

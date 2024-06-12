@@ -1,7 +1,7 @@
-from .world import *
-from .server import *
+from .objects import *
+from .controllers import *
+from .logic import *
 
 class Platform():
     def __init__(self):
-        self._world = World()
-        self._server = Server()
+        self._main_world = self._world = World()

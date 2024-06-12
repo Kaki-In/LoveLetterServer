@@ -1,6 +1,8 @@
 from ..objects import *
 from ..rules.character import *
 
+import typing as _T
+
 class LoveLetterCharacterMap():
     def __init__(self, character: 'LoveLetterCharacter', rule: 'LoveLetterCharacterRule', count: int):
         self._character: 'LoveLetterCharacter' = character
@@ -23,17 +25,17 @@ class LoveLetterCharacterMapper():
     def add_map(self, map: LoveLetterCharacterMap):
         self._characters.append(map)
     
-    def get_map_by_character(self, character: 'LoveLetterCharacter') -> LoveLetterCharacterMap:
+    def get_map_by_character(self, character: 'LoveLetterCharacter') -> _T.Optional[LoveLetterCharacterMap]:
         for data in self._characters:
             if data.get_character() == character:
                 return data
     
-    def get_map_by_rule(self, rule: 'LoveLetterCharacterRule') -> LoveLetterCharacterMap:
+    def get_map_by_rule(self, rule: 'LoveLetterCharacterRule') -> _T.Optional[LoveLetterCharacterMap]:
         for data in self._characters:
-            if data.getRule() == rule:
+            if data.get_rule() == rule:
                 return data
     
-    def get_map_by_character_name(self, name: str) -> LoveLetterCharacterMap:
+    def get_map_by_character_name(self, name: str) -> _T.Optional[LoveLetterCharacterMap]:
         for data in self._characters:
             if data.get_character().get_name() == name:
                 return data
