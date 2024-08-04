@@ -18,12 +18,15 @@ class Table():
         self._players: list[Client] = []
     
     def add_ghost(self, ghost: Client) -> None:
+        print("ghost added")
         self._ghosts.append(ghost)
     
     def remove_ghost(self, ghost: Client) -> None:
+        print("ghost removed")
         self._ghosts.remove(ghost)
     
     def set_ghost_as_player(self, ghost: Client) -> None:
+        print("ghost changed to player")
         if not ghost in self._ghosts:
             raise ReferenceError("no such ghost")
         
@@ -31,6 +34,7 @@ class Table():
         self._players.append(ghost)
     
     def set_player_as_ghost(self, player: Client) -> None:
+        print("player changed to ghost")
         if not player in self._players:
             raise ReferenceError("no such ghost")
         
@@ -47,6 +51,7 @@ class Table():
         return self._state
     
     def set_state(self, state: int) -> None:
+        print("state changed to", state)
         self._state = state
     
     def get_game(self) -> _T.Optional[_love_letter.LoveLetterGame]:

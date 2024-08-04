@@ -40,11 +40,11 @@ async def test(args):
     player1 = LoveLetterPlayer(0, "Bob")
     player2 = LoveLetterPlayer(1, "Bill")
     
-    notifier = LoveLetterNotifier()
+    mapper = create_default_characters_mapping()
+    
+    notifier = LoveLetterNotifier(mapper)
     notifier.plug_client_with_player(client1, player1)
     notifier.plug_client_with_player(client2, player2)
-    
-    mapper = LoveLetterCharacterMapper.create_default_mapping()
     
     game = LoveLetterGame(player1, player2)
     

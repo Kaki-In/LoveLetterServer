@@ -1,6 +1,8 @@
 import typing as _T
 
-class ClientResult():
+from ..reason import *
+
+class LoveLetterClientMessage():
     def __init__(self, name: str, args: dict[str, _T.Any]):
         self._name = name
         self._args = args
@@ -11,9 +13,8 @@ class ClientResult():
             "args": self._args
         }
     
-    def get_name(self) -> str:
+    def get_name(self):
         return self._name
     
-    def get_args(self) -> dict[str, _T.Any]:
+    def get_args(self):
         return self._args
-    

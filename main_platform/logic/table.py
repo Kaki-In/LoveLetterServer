@@ -15,9 +15,11 @@ class TableLogic():
             for player in table.get_players():
                 table.set_player_as_ghost(player)
     
-    async def start(self, table: Table, clients: list[Client]) -> None:
+    async def start(self, table: Table) -> None:
         if not self.can_start(table):
             raise ValueError("impossible to start this table")
+        
+        clients = table.get_players()
         
         self.set_table_state(table, TABLE_STATE_STARTING)
         
@@ -42,12 +44,16 @@ class TableLogic():
         table.set_game(game)
         self.set_table_state(table, TABLE_STATE_PLAYING)
         
+        notifier.plug_to_game(game)
+        
         try:
             await rule.main_game(game)
         except Exception as exc:
             reason = _love_letter.ClientReason(_love_letter.LOVE_LETTER_GAME_CRASHED, {
                 'error': str(exc)
             })
+            
+            print("An error occured while handling the game")
             
             await notifier.cancel_game(reason)
             self.set_table_state(table, TABLE_STATE_GAVE_UP )

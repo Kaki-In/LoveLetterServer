@@ -21,6 +21,8 @@ class TablesList():
         table = Table()
         name = self.get_unused_name()
         self._tables[name] = table
+
+        print("Table created")
         
         return name
     

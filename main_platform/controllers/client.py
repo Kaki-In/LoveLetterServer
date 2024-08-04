@@ -22,7 +22,7 @@ class DistantClient(_love_letter.LoveLetterClient):
     
     async def interact(self, message: _love_letter.ClientMessage) -> _love_letter.ClientResult:
         def func(resolver, rejecter):
-            self._interactions.append((self._last_interact_id, message, resolver))
+            self._interactions.append((self.get_new_interact_id(), message, resolver))
         
         while True:
             promise: _promisio.Promise =_promisio.Promise(func)
@@ -56,7 +56,7 @@ class DistantClient(_love_letter.LoveLetterClient):
                 client_result = _love_letter.ClientResult(began_interaction[1].get_name(), result)
                 
                 began_interaction[2] (client_result)
-                break
+                return
         
         raise ReferenceError("no such began interaction was found")
     

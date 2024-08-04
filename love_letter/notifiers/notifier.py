@@ -1,3 +1,4 @@
+from ..mapping import *
 from .client import *
 from .message import *
 from .result import *
@@ -5,17 +6,7 @@ from .reason import *
 
 import typing as _T
 import asyncio as _asyncio
-
-LOVE_LETTER_MESSAGE_DISPLAY_CARD                = "display.card"
-LOVE_LETTER_MESSAGE_CHOOSE_PLAYER               = "choose.player"
-LOVE_LETTER_MESSAGE_CHOOSE_CHARACTER            = "choose.character"
-LOVE_LETTER_MESSAGE_CHOOSE_CARD_TO_PLAY         = "choose.card_to_play"
-LOVE_LETTER_MESSAGE_SET_PROTECTED               = "set_player.protected"
-LOVE_LETTER_MESSAGE_SET_ELIMINATED              = "set_player.eliminated"
-LOVE_LETTER_MESSAGE_COMPARE                     = "compare_cards"
-LOVE_LETTER_MESSAGE_CONFIRM_UNSAFE              = "unsafe_play.confirm"
-LOVE_LETTER_MESSAGE_DISPLAY_UNSAFE              = "unsafe_play.display"
-LOVE_LETTER_MESSAGE_CANCEL_GAME                 = "cancel_game"
+import random as _random
 
 LOVE_LETTER_REASON_GUARD                        = "character.guard"
 LOVE_LETTER_REASON_PRIEST                       = "character.priest"
@@ -36,64 +27,60 @@ class Notifier():
         return self._clients[ player.get_id() ]
     
     async def notify_to_all(self, message: ClientMessage) -> None:
-        tasks = []
+        rules = []
         for client_id in self._clients:
             client = self._clients[ client_id ]
-            tasks.append( client.send_message(message) )
+            rules.append( client.send_message(message) )
         
-        await _asyncio.gather(*tasks)
+        await _asyncio.gather(*rules)
     
-    async def send_message_to_client(self, player: LoveLetterPlayer, message: ClientMessage):
+    async def send_message_to_client(self, player: LoveLetterPlayer, message: ClientMessage) -> None:
         client = self.get_client_by_player(player)
         await client.send_message(message)
     
-    async def interact_with_client(self, player: LoveLetterPlayer, message: ClientMessage):
+    async def interact_with_client(self, player: LoveLetterPlayer, message: ClientMessage) -> ClientResult:
         client = self.get_client_by_player(player)
-        await client.send_message(message)
+        while True:
+            result = await client.interact(message)
+            if message.answer_is_valid(result):
+                return result
 
 class LoveLetterNotifier(Notifier):
-    def __init__(self):
+    def __init__(self, mapper: LoveLetterCharacterMapper):
         super().__init__()
+        self._mapper = mapper
+    
+    def get_mapper(self) -> LoveLetterCharacterMapper:
+        return self._mapper
     
     async def display_card(self, player: LoveLetterPlayer, card: LoveLetterCard, reason: ClientReason) -> None:
-        message = ClientMessage(LOVE_LETTER_MESSAGE_DISPLAY_CARD,{
-            'character' : card.get_character().get_name(),
-            'reason'    : reason.toJson()
-        })
+        message = ClientMessageDisplayCard(card, reason)
         
         client = self.get_client_by_player(player)
-        await client.interact(message)
+        await self.interact_with_client(player, message)
     
-    async def choose_player_between(self, player: LoveLetterPlayer, players: list[LoveLetterPlayer], reason: ClientReason) -> ClientResult:
-        ids = [player.get_id() for player in players]
-        
-        message = ClientMessage(LOVE_LETTER_MESSAGE_CHOOSE_PLAYER, {
-            'players' : ids,
-            'reason'  : reason.toJson()
-        })
-        
-        client = self.get_client_by_player(player)
-        return await client.interact(message)
+    async def choose_player_between(self, player: LoveLetterPlayer, players: list[LoveLetterPlayer], round: LoveLetterRound, reason: ClientReason) -> LoveLetterPlayer:
+        message = ClientMessageChoosePlayer(players, reason)
+        result = await self.interact_with_client(player, message)
+
+        target_player = round.get_player_by_id( result.get_args()[ "player_id" ] )
+        return target_player
     
-    async def choose_character(self, player: LoveLetterPlayer, reason: ClientReason) ->  ClientResult:
-        message = ClientMessage(LOVE_LETTER_MESSAGE_CHOOSE_CHARACTER, {
-            'reason': reason.toJson()
-        })
+    async def choose_character(self, player: LoveLetterPlayer, reason: ClientReason) ->  LoveLetterCharacter:
+        message = ClientMessageChooseCharacter(reason, self._mapper)
+        result = await self.interact_with_client(player, message)
+
+        target_character_map = self._mapper.get_map_by_character_name( result.get_args() [ "character_name" ] )
         
-        client = self.get_client_by_player(player)
-        return await client.interact(message)
+        return target_character_map.get_character()
     
     async def choose_card_to_play(self, player: LoveLetterPlayer) -> ClientResult:
         card = player.get_card()
         drawn_card = player.get_drawn_card()
         
-        message = ClientMessage(LOVE_LETTER_MESSAGE_CHOOSE_CARD_TO_PLAY, {
-            'card'       : card.get_character().get_name(),
-            'drawn_card' : drawn_card.get_character().get_name()
-        })
+        message = ClientMessageChooseCardToPlay(card, drawn_card)
         
-        client = self.get_client_by_player(player)
-        result = await client.interact(message)
+        result = await self.interact_with_client(player, message)
         
         return result
     
@@ -119,31 +106,21 @@ class LoveLetterNotifier(Notifier):
             await client.send_message(message)
     
     async def compare_cards(self, player1: LoveLetterPlayer, player2: LoveLetterPlayer, reason: ClientReason) -> None:
-        message = ClientMessage(LOVE_LETTER_MESSAGE_COMPARE, {
-            'player1' : player1.get_id(),
-            'player1_card' : player1.get_card().get_character().get_name(),
-            'player2' : player2.get_id(),
-            'player2_card' : player2.get_card().get_character().get_name(),
-            'reason'  : reason.toJson()
-        })
+        message = ClientMessageCompareCards(player1, player2, reason)
         
         await _asyncio.gather(self.interact_with_client(player1, message), self.interact_with_client(player2, message))
     
     async def display_unsafe_message(self, player: LoveLetterPlayer, reason: ClientReason) -> None:
-        message = ClientMessage(LOVE_LETTER_MESSAGE_DISPLAY_UNSAFE, {
-            'reason'    : reason.toJson()
-        })
+        message = ClientMessageDisplayUnsafeMessage(reason)
         
         client = self.get_client_by_player(player)
-        await client.interact(message)
+        await self.interact_with_client(player, message)
     
     async def confirm_unsafe_message(self, player: LoveLetterPlayer, reason: ClientReason) -> ClientResult:
-        message = ClientMessage(LOVE_LETTER_MESSAGE_CONFIRM_UNSAFE, {
-            'reason'    : reason.toJson()
-        })
+        message = ClientMessageConfirmUnsafeMessage(reason)
         
         client = self.get_client_by_player(player)
-        return await client.interact(message)
+        return await self.interact_with_client(player, message)
     
     async def cancel_game(self, reason: ClientReason) -> None:
         message = ClientMessage(LOVE_LETTER_MESSAGE_CANCEL_GAME, {
@@ -154,6 +131,102 @@ class LoveLetterNotifier(Notifier):
             client = self._clients[ client_id ]
             await client.send_message(message)
     
+    
+    def plug_to_game(self, game: LoveLetterGame) -> None:
+        for player in game.get_players():
+            self.plug_to_player(player)
+    
+    def plug_to_player(self, player: LoveLetterPlayer) -> None:
+        events = player.get_events()
+        
+        func_map = {
+            PLAYER_EVENT_CARDS: self.on_event_player_cards,
+            PLAYER_EVENT_DISCARD: self.on_event_player_discard,
+            PLAYER_EVENT_ELIMINATION: self.on_event_player_elimination,
+            PLAYER_EVENT_INITIALIZATION: self.on_event_player_initialization,
+            PLAYER_EVENT_PROTECTION: self.on_event_player_protection,
+            PLAYER_EVENT_ROUND_WON: self.on_event_player_won_round
+        }
+        
+        for func_event in func_map:
+            events[ func_event ].addEventFunction(func_map[ func_event ])
+    
+    
+    
+    async def on_event_player_cards(self, player: LoveLetterPlayer) -> None:
+        message_others = ClientMessage(LOVE_LETTER_MESSAGE_EVENT_PLAYER_CARD, {
+            "player": player.get_id(),
+            "cards": player.get_card() is not None,
+            "drawn_cards": player.get_drawn_card() is not None,
+        })
+        
+        message_player = ClientMessage(LOVE_LETTER_MESSAGE_EVENT_PLAYER_CARD, {
+            "player": player.get_id(),
+            "cards": player.get_card(),
+            "drawn_cards": player.get_drawn_card(),
+        })
+        
+        for client_id in self._clients:
+            client = self._clients[ client_id ]
+            
+            if client_id == player.get_id():
+                await client.send_message(message_player)
+            else:
+                await client.send_message(message_others)
+        
+    async def on_event_player_discard(self, player: LoveLetterPlayer) -> None:
+        message = ClientMessage(LOVE_LETTER_MESSAGE_EVENT_PLAYER_DISCARD, {
+            "player": player.get_id(),
+            "discard": [card.toJson() for card in player.get_discard()]
+        })
+        
+        for client_id in self._clients:
+            client = self._clients[ client_id ]
+            
+            await client.send_message(message)
+        
+    async def on_event_player_elimination(self, player: LoveLetterPlayer) -> None:
+        message = ClientMessage(LOVE_LETTER_MESSAGE_EVENT_PLAYER_ELIMINATION, {
+            "player": player.get_id(),
+            "eliminated": player.is_eliminated()
+        })
+        
+        for client_id in self._clients:
+            client = self._clients[ client_id ]
+            
+            await client.send_message(message)
+        
+    async def on_event_player_initialization(self, player: LoveLetterPlayer) -> None:
+        message = ClientMessage(LOVE_LETTER_MESSAGE_EVENT_PLAYER_INITIALIZATION, {
+            "player": player.get_id()
+        })
+        
+        for client_id in self._clients:
+            client = self._clients[ client_id ]
+            
+            await client.send_message(message)
+        
+    async def on_event_player_protection(self, player: LoveLetterPlayer) -> None:
+        message = ClientMessage(LOVE_LETTER_MESSAGE_EVENT_PLAYER_PROTECTION, {
+            "player": player.get_id(),
+            "protected": player.is_protected()
+        })
+        
+        for client_id in self._clients:
+            client = self._clients[ client_id ]
+            
+            await client.send_message(message)
+        
+    async def on_event_player_won_round(self, player: LoveLetterPlayer) -> None:
+        message = ClientMessage(LOVE_LETTER_MESSAGE_EVENT_PLAYER_WON_ROUND, {
+            "player": player.get_id()
+        })
+        
+        for client_id in self._clients:
+            client = self._clients[ client_id ]
+            
+            await client.send_message(message)
+        
     
 
 

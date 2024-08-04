@@ -1,6 +1,6 @@
 import typing as _T
 
-class ClientReason():
+class LoveLetterClientReason():
     def __init__(self, name: str, args: dict[str, _T.Any]):
         self._name = name
         self._args = args

@@ -1,51 +1,55 @@
-from .round import LoveLetterRoundRule
+from .rule import *
 
-from ..objects import *
-from ..notifiers import *
-from ..mapping import *
+class LoveLetterGameRule(LoveLetterRule):
+    def __init__(self):
+        super().__init__()
 
-import typing as _T
+    def should_be_played_again(self, context: LoveLetterGameContext, results: tuple[LoveLetterResult, LoveLetterRoundResult, LoveLetterResult]) -> bool:
+        winners = self.get_winners(context)
+        return len(winners) > 0
+    
+    def get_next_tasks(self, context: LoveLetterGameContext) -> list[LoveLetterTask]:
+        return [
+            LoveLetterRoundInitializationTask(),
+            LoveLetterPlayRoundTask(),
+            LoveLetterRoundTerminationTask(),
+        ]
+    
+    def get_result(self, context: LoveLetterGameContext) -> LoveLetterGameResult:
+        return LoveLetterGameResult(self.get_winners(context))
+    
+    def get_winners(self, context: LoveLetterGameContext) -> list[LoveLetterPlayer]:
+        max_rounds_count = self.get_max_rounds_count(context)
 
-class LoveLetterGameRules():
-    def __init__(self, notifier: LoveLetterNotifier, mapper: LoveLetterCharacterMapper):
-        self._notifier = notifier
-        self._mapper = mapper
+        board = context.get_board()
+
+        players = []
+
+        for player in board.get_players():
+            if player.get_won_rounds() >= max_rounds_count:
+                players.append(player)
         
-        self._rounds_rule = LoveLetterRoundRule()
+        return players
     
-    def create_new_deck(self) -> LoveLetterDeck:
-        deck = LoveLetterDeck()
+    def get_max_rounds_count(self, context: LoveLetterGameContext) -> int:
+        configuration = context.get_configuration()
+        game_configuration = configuration.get_game_configuration()
+
+        if game_configuration.has_max_rounds_imposed():
+            return game_configuration.get_max_rounds()
         
-        for map in self._mapper.get_all_maps():
-            for count in range(map.get_count()):
-                deck.add_card(LoveLetterCard(map.get_character()))
+        board = context.get_board()
+        players_count = len(board.get_players())
+
+        if   players_count == 2:
+            return 7
         
-        return deck
-    
-    def get_notifier(self) -> LoveLetterNotifier:
-        return self._notifier
-    
-    def get_characters_mapper(self) -> LoveLetterCharacterMapper:
-        return self._mapper
-    
-    def is_finished(self, game: LoveLetterGame) -> bool:
-        players = game.get_players()
+        elif players_count == 3:
+            return 5
         
-        players_number = len(players)
+        elif players_count == 4:
+            return 4
         
-        max_points = [6, 5, 4][ players_number - 2 ]
-        
-        for player in players:
-            if player.get_won_rounds() >= max_points:
-                return True
-        
-        return False
-    
-    async def main_game(self, game: LoveLetterGame) -> None:
-        while not self.is_finished(game):
-            game.init_new_round(self.create_new_deck())
-            
-            await self._rounds_rule.main_round(self._mapper, self._notifier, game.get_actual_round())
-        
+        raise ReferenceError('there is no default rounds count for this number of players')
 
 

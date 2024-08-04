@@ -1,47 +1,77 @@
-from ..mapping import *
-from ..objects import *
+from .rule import *
 
-from .player_turn import *
-from .character import *
-
-import typing as _T
-
-class LoveLetterRoundRule():
+class LoveLetterRoundRule(LoveLetterRule):
     def __init__(self):
-        self._players_rule = LoveLetterPlayerTurnRule()
+        super().__init__()
+
+    def should_be_played_again(self, context: LoveLetterGameContext, results: tuple[LoveLetterResult, LoveLetterResult, LoveLetterResult, LoveLetterResult]) -> bool:
+        players = self.get_round_winners(context.get_board())
+
+        return len(players) == 0
+
+    def get_next_tasks(self, context: LoveLetterGameContext) -> list[LoveLetterTask]:
+        state = context.get_state()
+        round_state = state.get_round_state()
+        turn_state = round_state.get_turn_state()
+        player = turn_state.get_player()
+
+        return [
+            LoveLetterPlayerInitializationTask(player),
+            LoveLetterPlayPlayerTask(player),
+            LoveLetterPlayerTerminationTask(player),
+            LoveLetterChangeActivePlayerTask()
+        ]
     
-    async def main_round(self, mapper: LoveLetterCharacterMapper, notifier: LoveLetterNotifier, round: LoveLetterRound) -> None:
-        round.get_deck().shuffle()
+    def get_round_winners(self, board: LoveLetterBoard) -> list[LoveLetterPlayer]:
+        alive_players = board.get_alive_players()
+        deck = board.get_deck()
+
+        if len(alive_players) <= 1:
+            return list(alive_players)
         
-        players = round.get_players()
+        if len(deck) > 0:
+            return []
         
-        round.set_hidden_card(round.get_deck().take_card())
+        max_char_value = 0
+        max_players: list[LoveLetterPlayer] = []
         
-        if len(players) == 2:
-            for _ in range(3):
-                round.add_removed_card(round.get_deck().take_card())
+        for player in alive_players:
+            character = player.get_card().get_character()
+            value = character.get_value()
+
+            if value > max_char_value:
+                max_char_value = value
+                max_players = [player]
+            
+            elif value == max_char_value:
+                max_players.append(player)
         
-        for player in players:
-            player.initialize_for_round()
-            player.take_card(round.get_deck().take_card())
-    
-        while not self.is_finished(round):
-            await self._players_rule.play(mapper, notifier, round)
-            round.select_next_player()
-    
-    async def make_player_discard(self, mapper: LoveLetterCharacterMapper, notifier: LoveLetterNotifier, player: LoveLetterPlayer, round: LoveLetterRound) -> None:
-        card = player.get_card()
-        player.lay_card()
+        if len(max_players) == 1:
+            return max_players
         
-        char_rule = mapper.get_map_by_character(card.get_character()).get_rule()
-        
-        await char_rule.execute_on_discarded(mapper, notifier, round, player)
+        max_cards_count = -1
+        last_max_players = []
+
+        for player in alive_players:
+            discard = player.get_discard()
+            card_sum = 0
+
+            for card in discard:
+                card_sum += card.get_character().get_value()
+            
+            if card_sum > max_cards_count:
+                max_cards_count = card_sum
+                last_max_players = [player]
+            
+            elif card_sum == max_cards_count:
+                last_max_players.append(player)
+
+        return last_max_players
     
-    def is_finished(self, round: LoveLetterRound) -> bool:
-        return len(round.get_alive_players()) <= 1 or len(round.get_deck()) == 0
-    
-    
-    
-    
+    def get_status(self, context: LoveLetterGameContext) -> LoveLetterRoundResult:
+        winners = self.get_round_winners(context.get_board())
+
+        return LoveLetterRoundResult(winners)
+
 
 

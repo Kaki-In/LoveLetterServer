@@ -25,6 +25,7 @@ class ClientLogic():
                 
                 if game_client.interactions_are_waiting():
                     await self.main_game_client_interaction(client, game_client)
+            
             except Exception as exc:
                 pass
             
@@ -34,10 +35,12 @@ class ClientLogic():
                     break
                 
                 data = _json.loads(message)
-                loop.create_task( self._actions.execute_action(data['name'], data['args'], client, world) )
+                loop.create_rule( self._actions.execute_action(data['name'], data['args'], client, world) )
                 
             except Exception as exc:
                 pass
+            
+            await _asyncio.sleep(0.1)
     
     async def receive_message(self, client: Client) -> str:
         loop = _asyncio.get_event_loop()

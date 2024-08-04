@@ -1,2 +1,2 @@
-from .game import *
-from .character import *
+from .task import *
+
