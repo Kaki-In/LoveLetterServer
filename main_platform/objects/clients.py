@@ -12,7 +12,7 @@ class ClientsList():
     def get_client_by_id(self, id: int) -> Client:
         return self._clients[ id ]
     
-    def create_new_client(self, socket: _ssl.SSLContext | _socket.socket, address):
+    def create_new_client(self, socket: _ssl.SSLSocket | _socket.socket, address):
         cid = self._last_id
         self._last_id += 1
         

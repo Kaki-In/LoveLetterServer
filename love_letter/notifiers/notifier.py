@@ -1,4 +1,4 @@
-from ..mapping import *
+from love_letter.mapping import *
 from .client import *
 from .message import *
 from .result import *

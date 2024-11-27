@@ -35,7 +35,7 @@ class ClientLogic():
                     break
                 
                 data = _json.loads(message)
-                loop.create_rule( self._actions.execute_action(data['name'], data['args'], client, world) )
+                loop.create_task( self._actions.execute_action(data['name'], data['args'], client, world) )
                 
             except Exception as exc:
                 pass

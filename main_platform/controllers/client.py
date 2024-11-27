@@ -1,36 +1,36 @@
 import love_letter as _love_letter
-import promisio as _promisio
 import typing as _T
 
-class DistantClient(_love_letter.LoveLetterClient):
+import board_game as _board_game
+
+class DistantClient(_board_game.BoardGameClient):
     def __init__(self):
         super().__init__()
         
-        self._messages: list[_love_letter.ClientMessage] = []
-        self._interactions: list[tuple[int, _love_letter.ClientMessage, _T.Any]] = []
+        self._messages: list[_board_game.BoardGameClientMessage] = []
+        self._interactions: list[tuple[int, _board_game.BoardGameClientMessage, _T.Any]] = []
         
-        self._began_interactions: list[tuple[int, _love_letter.ClientMessage, _T.Any]] = []
+        self._began_interactions: list[tuple[int, _board_game.BoardGameClientMessage, _T.Any]] = []
         
         self._last_interact_id = 0
     
-    async def send_message(self, message: _love_letter.ClientMessage) -> None:
+    def send_message(self, message: _board_game.BoardGameClientMessage) -> None:
         self._messages.append(message)
     
     def get_new_interact_id(self) -> int:
         self._last_interact_id += 1
         return self._last_interact_id
     
-    async def interact(self, message: _love_letter.ClientMessage) -> _love_letter.ClientResult:
+    def interact(self, interaction: _board_game.BoardGameClientMessage) -> None:
         def func(resolver, rejecter):
-            self._interactions.append((self.get_new_interact_id(), message, resolver))
+            self._interactions.append((self.get_new_interact_id(), interaction, resolver))
         
-        while True:
-            promise: _promisio.Promise =_promisio.Promise(func)
-            
-            result: _love_letter.ClientResult = await promise
-            
-            if result.get_name() == message.get_name():
-                return result
+    
+    async def accepts_answer(self, interaction: _board_game.BoardGameClientInteraction, result: _board_game.BoardGameClientResponse) -> bool:
+        if result.get_name() == interaction.get_name():
+            return True
+        
+        return False
     
     def messages_are_waiting(self) -> bool:
         return bool(self._messages)
@@ -38,10 +38,10 @@ class DistantClient(_love_letter.LoveLetterClient):
     def interactions_are_waiting(self) -> bool:
         return bool(self._interactions)
     
-    def get_next_message(self) -> _love_letter.ClientMessage:
+    def get_next_message(self) -> _board_game.BoardGameClientMessage:
         return self._messages.pop(0)
     
-    def get_next_interaction(self) -> tuple[int, _love_letter.ClientMessage]:
+    def get_next_interaction(self) -> tuple[int, _board_game.BoardGameClientMessage]:
         interaction = self._interactions.pop(0)
         
         self._began_interactions.append(interaction)
@@ -53,7 +53,7 @@ class DistantClient(_love_letter.LoveLetterClient):
             if began_interaction[0] == id:
                 self._began_interactions.remove(began_interaction)
                 
-                client_result = _love_letter.ClientResult(began_interaction[1].get_name(), result)
+                client_result = _board_game.BoardGameClientResponse(began_interaction[1].get_name(), result)
                 
                 began_interaction[2] (client_result)
                 return

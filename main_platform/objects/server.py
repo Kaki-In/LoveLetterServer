@@ -42,6 +42,12 @@ class Server():
     def set_binding_connection(self, bind: _ssl.SSLSocket | _socket.socket) -> None:
         self._bind = bind
     
-    def get_binding_connection(self) -> _T.Optional[_ssl.SSLSocket | _socket.socket]:
+    def get_binding_connection(self) -> _ssl.SSLSocket | _socket.socket:
+        if self._bind is None:
+            raise ValueError("no binding connection given at this time")
+        
         return self._bind
+    
+    def has_binding_connection(self) -> bool:
+        return self._bind is not None
     

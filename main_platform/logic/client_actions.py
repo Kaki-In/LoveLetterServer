@@ -183,7 +183,7 @@ class ClientTableActions(ClientActions):
         if table:
             if logic.can_start(table):
                 loop = _asyncio.get_event_loop()
-                loop.create_rule(logic.start(table))
+                loop.create_task(logic.start(table))
             
             else:
                 data = {

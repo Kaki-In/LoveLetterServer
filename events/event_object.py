@@ -12,7 +12,7 @@ class EventObject(_T.Generic[_KeyType]):
         for name in events_names:
             self.__events[ name ] = EventHandler()
     
-    def addEventListener(self, name: _KeyType, function: _T.Callable | _T.Awaitable ) -> None:
+    def addEventListener(self, name: _KeyType, function: _T.Callable[[], _T.Coroutine[None, None, _T.Any]] ) -> None:
         self.__events[ name ].addEventFunction(function)
     
     def getEvent(self, name: _KeyType) -> EventHandler:

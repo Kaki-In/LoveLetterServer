@@ -43,7 +43,7 @@ class ServerLogic():
             
             print("Client {} received!".format(client.get_id()))
             
-            loop.create_rule(self.main_client(server, client, world))
+            loop.create_task(self.main_client(server, client, world))
             
         except _socket.timeout:
             return

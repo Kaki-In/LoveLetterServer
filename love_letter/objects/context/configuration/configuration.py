@@ -4,8 +4,12 @@ from .game import *
 
 import typing as _T
 
-class LoveLetterConfiguration():
+import board_game as _board_game
+
+class LoveLetterConfiguration(_board_game.BoardGameConfiguration):
     def __init__(self, characters_configuration: LoveLetterCharactersConfiguration, rounds_configuration: LoveLetterRoundsConfiguration, game_configuration: LoveLetterGameConfiguration):
+        super().__init__()
+        
         self._char_conf = characters_configuration
         self._rounds_conf = rounds_configuration
         self._game_conf = game_configuration

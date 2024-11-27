@@ -1,4 +1,4 @@
-from ...objects.context.board import *
+from love_letter.board import *
 
 class LoveLetterDiscardCharacterRule():
     def __init__(self, player: LoveLetterPlayer, contrainer: LoveLetterPlayer):

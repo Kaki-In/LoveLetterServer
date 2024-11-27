@@ -1,9 +1,13 @@
-from .board import *
-from .state import *
+from love_letter.board import *
+from love_letter.states import *
 from .configuration import *
 
-class LoveLetterGameContext():
+import board_game as _board_game
+
+class LoveLetterGameContext(_board_game.BoardGameContext):
     def __init__(self, board: LoveLetterBoard, state: LoveLetterGameState, configuration: LoveLetterConfiguration):
+        super().__init__(board, state, configuration)
+
         self._board = board
         self._state = state
         self._configuration = configuration
