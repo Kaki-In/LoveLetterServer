@@ -3,7 +3,7 @@ from love_letter.states import *
 
 class LoveLetterArrestPlayerTask(LoveLetterTask):
     def __init__(self, player: LoveLetterPlayer, player_state: LoveLetterNeedingPlayerState, character_state: LoveLetterNeedingCharacterState):
-        super().__init__()
+        LoveLetterTask.__init__(self)
 
         self._player = player
         self._player_state = player_state

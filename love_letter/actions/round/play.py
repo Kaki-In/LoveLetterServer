@@ -3,5 +3,5 @@ from love_letter.objects import *
 
 class LoveLetterPlayRoundAction(LoveLetterAction):
     def __init__(self):
-        super().__init__()
+        LoveLetterAction.__init__(self)
 

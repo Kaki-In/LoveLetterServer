@@ -5,7 +5,7 @@ import board_game as _board_game
 
 class DistantClient(_board_game.BoardGameClient):
     def __init__(self):
-        super().__init__()
+        _board_game.BoardGameClient.__init__(self)
         
         self._messages: list[_board_game.BoardGameClientMessage] = []
         self._interactions: list[tuple[int, _board_game.BoardGameClientMessage, _T.Any]] = []

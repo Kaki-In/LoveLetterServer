@@ -4,15 +4,30 @@ from .deck import *
 import typing as _T
 
 import board_game as _board_game
+import random as _random
 
 class LoveLetterBoard(_board_game.BoardGameBoard):
     def __init__(self, players: list[LoveLetterPlayer], deck: LoveLetterDeck):
-        super().__init__()
-        self._players = players.copy()
+        _board_game.BoardGameBoard.__init__(self)
+
+        players = players.copy()
+        _random.shuffle(players)
+
+        self._players = players
         self._deck: LoveLetterDeck = deck
     
     def get_players(self) -> list[LoveLetterPlayer]:
         return self._players.copy()
+    
+    def get_player_at_right_of(self, player: LoveLetterPlayer) -> LoveLetterPlayer:
+        player_index = self._players.index(player)
+
+        return self._players[(player_index+1)%len(self._players)]
+    
+    def get_player_at_left_of(self, player: LoveLetterPlayer) -> LoveLetterPlayer:
+        player_index = self._players.index(player)
+
+        return self._players[(player_index-1)%len(self._players)]
     
     def get_available_players(self) -> list[LoveLetterPlayer]:
         players = []

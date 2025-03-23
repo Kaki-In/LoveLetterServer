@@ -5,9 +5,9 @@ import typing as _T
 
 class LoveLetterNeedingCharacterState(LoveLetterState):
     def __init__(self, possibilities: list[LoveLetterCharacter]):
-        super().__init__()
+        LoveLetterState.__init__(self)
 
-        self._character: _T.Optional[LoveLetterCharacter]
+        self._character: _T.Optional[LoveLetterCharacter] = None
         self._possibilities = possibilities
 
     def get_chosen_character(self) -> LoveLetterCharacter:

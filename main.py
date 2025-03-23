@@ -1,18 +1,21 @@
 #!/usr/bin/python3
 
-# from main_platform import *
+import sys
+sys.dont_write_bytecode = True
+
+from main_platform import *
 from love_letter import *
 from love_letter.mapping.rules_map import *
-import sys
 import json
 import asyncio
 import ssl as _ssl
 
 from board_game import *
 
+
 class LocalClient(BoardGameClient):
     def __init__(self):
-        super().__init__()
+        BoardGameClient.__init__(self)
     
     def send_message(self, message: BoardGameClientMessage) -> None:
         print("-------------------------------------------")
@@ -39,7 +42,7 @@ class LocalClient(BoardGameClient):
 async def test(args):
     client1 = LocalClient()
     client2 = LocalClient()
-    
+
     player1 = LoveLetterPlayer(0, "Bob")
     player2 = LoveLetterPlayer(1, "Bill")
     player3 = LoveLetterPlayer(2, "Boule")
@@ -47,6 +50,8 @@ async def test(args):
     players = [player1, player2, player3]
 
     charc = LOVE_LETTER_CHARACTER_CONFIGURATION_DEFAULT
+
+    criteria = LoveLetterCriteria()
 
     roundsc = LoveLetterRoundsConfiguration(
         LOVE_LETTER_ROUNDS_EQUALITY_POLICY.RANDOM
@@ -64,11 +69,10 @@ async def test(args):
         LoveLetterBoard(
             players, deck
         ),
-        LoveLetterGameState(),
         c
     )
 
-    protocols = LoveLetterRuleMap()
+    protocols = LoveLetterRuleMap(criteria)
 
     game_handler = BoardGameHandler(context, protocols)
     game_handler.add_main_task(LoveLetterPlayGameTask())
@@ -77,7 +81,6 @@ async def test(args):
 
     import time
     while not game_handler.is_terminated():
-        time.sleep(5)
         new_actions = game_handler.main_once()
         actions += new_actions
 
@@ -88,12 +91,27 @@ async def test(args):
             interaction = game_handler.get_required_interaction()
             print(interaction, interaction.toJson())
 
-            player: int = interaction.get_args()['player']
+            if type(interaction) == LoveLetterChooseCardInteraction:
+                json_result = "HAND_CARD"
+                response = interaction.json_to_response(json_result)
+            
+            elif type(interaction) == LoveLetterChoosePlayerInteraction:
+                json_result = {
+                    'player': 0
+                }
+                response = interaction.json_to_response(json_result)
 
-            game_handler.answer(LoveLetterChoosePlayerResponse(player2))
+            elif type(interaction) == LoveLetterChooseCharacterInteraction:
+                json_result = {
+                    'player': 0
+                }
+                response = interaction.json_to_response(json_result)
+
+            game_handler.answer(response)
 
 
         print("-----------------------------")
+        time.sleep(2)
 
     return 0
 

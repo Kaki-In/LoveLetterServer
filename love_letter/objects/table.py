@@ -4,7 +4,7 @@ import board_game as _board_game
 
 class LoveLetterTable(_board_game.BoardGameTable):
     def __init__(self, context: LoveLetterGameContext, clients: list[_board_game.BoardGameClient]):
-        super().__init__(context, clients)
+        _board_game.BoardGameTable.__init__(self, context, clients)
         self._context = context
         self._clients = clients
     

@@ -5,10 +5,11 @@ from love_letter.tasks import *
 import board_game as _board_game
 
 class LoveLetterTurnRule(LoveLetterRule):
-    def __init__(self, task: LoveLetterPlayTurnTask):
-        super().__init__(task)
+    def __init__(self, task: LoveLetterPlayTurnTask, criteria: LoveLetterCriteria):
+        LoveLetterRule.__init__(self, task, criteria)
         
         self._player = task.get_effective_player()
+        self._state = task.get_turn_state()
     
     def execute_start(self, context: LoveLetterGameContext) -> list[LoveLetterAction]:
         print("Executing start of Turn rule")
@@ -25,8 +26,7 @@ class LoveLetterTurnRule(LoveLetterRule):
         return False
     
     def get_tasks(self, context: LoveLetterGameContext) -> list[LoveLetterTask]:
-        state = context.get_state()
-        turn_state = state.get_round_state().get_turn_state()
+        turn_state = self._state
         player = turn_state.get_player()
 
         return [

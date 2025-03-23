@@ -43,7 +43,7 @@ class ClientActions():
 
 class ClientMainActions(ClientActions):
     def __init__(self):
-        super().__init__()
+        ClientActions.__init__(self)
         
         self.add_action('join_random_table', self.join_random_table)
         self.add_action('join_named_table', self.join_named_table)
@@ -100,7 +100,7 @@ class ClientMainActions(ClientActions):
 
 class ClientGameActions(ClientActions):
     def __init__(self):
-        super().__init__()
+        ClientActions.__init__(self)
         
         self.add_action('answer_to_interaction', self.answer_to_interaction)
     
@@ -111,7 +111,7 @@ class ClientGameActions(ClientActions):
 
 class ClientTableActions(ClientActions):
     def __init__(self):
-        super().__init__()
+        ClientActions.__init__(self)
         
         self.add_action('enter_in_game', self.enter_in_game)
         self.add_action('exit_game', self.exit_game)

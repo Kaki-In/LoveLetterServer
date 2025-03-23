@@ -3,7 +3,7 @@ from love_letter.board import *
 
 class LoveLetterArrestPlayerFailedAction(LoveLetterAction):
     def __init__(self, player: LoveLetterPlayer, arrested_player: LoveLetterPlayer, failing_character: LoveLetterCharacter):
-        super().__init__()
+        LoveLetterAction.__init__(self)
 
         self._player = player
         self._target = arrested_player

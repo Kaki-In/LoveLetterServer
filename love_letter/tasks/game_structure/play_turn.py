@@ -3,7 +3,7 @@ from love_letter.objects import *
 
 class LoveLetterPlayTurnTask(LoveLetterTask):
     def __init__(self, player: LoveLetterPlayer, turn_state: LoveLetterTurnState):
-        super().__init__()
+        LoveLetterTask.__init__(self)
 
         self._player = player
         self._turn_state = turn_state

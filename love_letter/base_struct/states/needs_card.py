@@ -5,7 +5,7 @@ import typing as _T
 
 class LoveLetterNeedingCardState(LoveLetterState):
     def __init__(self):
-        super().__init__()
+        LoveLetterState.__init__(self)
 
         self._player_card: _T.Optional[LOVE_LETTER_PLAYER_CARD] = None
 

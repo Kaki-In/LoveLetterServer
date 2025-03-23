@@ -1,4 +1,4 @@
-from .rules import *
+from .base_struct.rule import *
 
 import typing as _T
 

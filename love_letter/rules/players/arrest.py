@@ -3,8 +3,8 @@ from love_letter.tasks import *
 from love_letter.actions import *
 
 class LoveLetterArrestPlayerRule(LoveLetterRule):
-    def __init__(self, task: LoveLetterArrestPlayerTask):
-        super().__init__(task)
+    def __init__(self, task: LoveLetterArrestPlayerTask, criteria: LoveLetterCriteria):
+        LoveLetterRule.__init__(self, task, criteria)
 
         self._player = task.get_effective_player()
         self._player_state = task.get_player_state()

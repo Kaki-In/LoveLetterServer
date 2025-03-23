@@ -1,6 +1,6 @@
 from .client import *
 
-import love_letter as _love_letter
+import love_letter.objects as _love_letter_objects
 import typing as _T
 
 TABLE_STATE_WAITING     = 0
@@ -12,7 +12,7 @@ TABLE_STATE_FINISHED    = 4
 class Table():
     def __init__(self):
         self._state = TABLE_STATE_WAITING
-        self._game: _T.Optional[_love_letter.LoveLetterTable] = None
+        self._game: _T.Optional[_love_letter_objects.LoveLetterTable] = None
         
         self._ghosts: list[Client] = []
         self._players: list[Client] = []
@@ -54,10 +54,10 @@ class Table():
         print("state changed to", state)
         self._state = state
     
-    def get_game(self) -> _T.Optional[_love_letter.LoveLetterTable]:
+    def get_game(self) -> _T.Optional[_love_letter_objects.LoveLetterTable]:
         return self._game
     
-    def set_game(self, game: _love_letter.LoveLetterTable) -> None:
+    def set_game(self, game: _love_letter_objects.LoveLetterTable) -> None:
         self._game = game
     
     def toJson(self):

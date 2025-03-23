@@ -4,7 +4,7 @@ from love_letter.objects import *
 
 class LoveLetterDiscardAction(LoveLetterAction):
     def __init__(self, player: LoveLetterPlayer, card: LoveLetterCard, player_card: LOVE_LETTER_PLAYER_CARD, reason: LOVE_LETTER_DISCARD_REASON):
-        super().__init__()
+        LoveLetterAction.__init__(self)
 
         self._player = player
         self._reason = reason

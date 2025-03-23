@@ -1,1 +1,2 @@
-from .game import *
+from .game_structure import *
+from .characters import *

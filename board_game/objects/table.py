@@ -1,5 +1,6 @@
 from .context import *
-from .clients import *
+
+from board_game.clients import *
 
 class BoardGameTable():
     def __init__(self, context: BoardGameContext, clients: list[BoardGameClient]):

@@ -2,26 +2,22 @@ from love_letter.base_struct.rule import *
 from love_letter.actions import *
 from love_letter.tasks import *
 
-class LoveLetterDiscardRule(LoveLetterRule):
-    def __init__(self, task: LoveLetterDiscardTask):
-        super().__init__(task)
-
-        self._card = task.get_card()
-        self._reason = task.get_reason()
-        self._player = task.get_effective_player()
-    
+class LoveLetterDiscardRule(LoveLetterRule[LoveLetterDiscardTask]):
     def execute_start(self, context: LoveLetterGameContext) -> list[LoveLetterAction]:
-        if self._card == LOVE_LETTER_PLAYER_CARD.PLAYER_CARD:
-            card = self._player.get_card()
-            self._player.lay_card()
-        else:
-            card = self._player.get_drawn_card()
-            self._player.lay_drawn_card()
+        task = self.get_task()
+        player = task.get_effective_player()
 
-        self._player.add_to_discard(card)
+        if task.get_card() == LOVE_LETTER_PLAYER_CARD.PLAYER_CARD:
+            card = player.get_card()
+            player.lay_card()
+        else:
+            card = player.get_drawn_card()
+            player.lay_drawn_card()
+
+        player.add_to_discard(card)
 
         return [
-            LoveLetterDiscardAction(self._player, card, self._card, self._reason)
+            LoveLetterDiscardAction(player, card, task.get_card(), task.get_reason())
         ]
 
 

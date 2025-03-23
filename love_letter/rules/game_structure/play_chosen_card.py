@@ -3,8 +3,8 @@ from love_letter.tasks import *
 from love_letter.enum import *
 
 class LoveLetterPlayChosenCardRule(LoveLetterRule):
-    def __init__(self, task: LoveLetterPlayChosenCardTask):
-        super().__init__(task)
+    def __init__(self, task: LoveLetterPlayChosenCardTask, criteria: LoveLetterCriteria):
+        LoveLetterRule.__init__(self, task, criteria)
 
         self._player = task.get_player()
         self._card_state = task.get_chosen_card_state()

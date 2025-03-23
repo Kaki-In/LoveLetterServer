@@ -3,8 +3,10 @@ from love_letter.actions import *
 from love_letter.tasks import *
 
 class LoveLetterRoundRule(LoveLetterRule):
-    def __init__(self, task: LoveLetterPlayRoundTask):
-        super().__init__(task)
+    def __init__(self, task: LoveLetterPlayRoundTask, criteria: LoveLetterCriteria):
+        LoveLetterRule.__init__(self, task, criteria)
+
+        self._state = task.get_round_state()
 
     def should_be_played_again(self, context: LoveLetterGameContext) -> bool:
         players = self.get_round_winners(context.get_board())
@@ -17,7 +19,7 @@ class LoveLetterRoundRule(LoveLetterRule):
         self.prepare_cards(context)
 
         turn = LoveLetterTurnState(context.get_board().get_available_players()[0])
-        context.get_state().get_round_state().mark_as_setupped(turn)
+        self._state.set_chosen_object(turn)
 
         return [LoveLetterNewRoundAction()]
     
@@ -37,9 +39,8 @@ class LoveLetterRoundRule(LoveLetterRule):
             player.take_card(deck.take_card())
 
     def get_tasks(self, context: LoveLetterGameContext) -> list[LoveLetterTask]:
-        state = context.get_state()
-        round_state = state.get_round_state()
-        turn_state = round_state.get_turn_state()
+        round_state = self._state
+        turn_state = round_state.get_chosen_object()
         player = turn_state.get_player()
 
         return [

@@ -6,14 +6,15 @@ import board_game as _board_game
 
 class LoveLetterCharacterTasksMap(_board_game.BoardGameObjectTasksMap[LoveLetterCharacter, LoveLetterCharacterTask]):
     def __init__(self) :
-        super().__init__()
+        _board_game.BoardGameObjectTasksMap.__init__(self)
 
         self.add_task(LOVE_LETTER_CHARACTER_GUARD, LoveLetterPlayGuardCharacterTask)
+        self._tasks_states = {}
 
     def add_task(self, task: LoveLetterCharacter, rule: type[LoveLetterCharacterTask]) -> None:
-        return super().add_task(task, rule)
+        return _board_game.BoardGameObjectTasksMap.add_task(self, task, rule)
     
-    def get_task(self, object: LoveLetterCharacter, board: LoveLetterBoard, **args) -> LoveLetterCharacterTask:
-        return super().get_task(object, board=board, **args)
+    def get_task(self, object: LoveLetterCharacter, board: LoveLetterBoard, configuration: LoveLetterConfiguration, **args) -> LoveLetterCharacterTask:
+        return _board_game.BoardGameObjectTasksMap.get_task(self, object, board=board, configuration=configuration, **args)
     
     

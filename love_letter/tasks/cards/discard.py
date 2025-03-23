@@ -4,7 +4,7 @@ from love_letter.enum import *
 
 class LoveLetterDiscardTask(LoveLetterTask):
     def __init__(self, player: LoveLetterPlayer, reason: LOVE_LETTER_DISCARD_REASON, card: LOVE_LETTER_PLAYER_CARD = LOVE_LETTER_PLAYER_CARD.PLAYER_CARD):
-        super().__init__()
+        LoveLetterTask.__init__(self)
 
         self._card = card
         self._player = player

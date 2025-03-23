@@ -1,4 +1,3 @@
-from .tables import *
 from ..controllers.client import *
 
 import socket as _socket

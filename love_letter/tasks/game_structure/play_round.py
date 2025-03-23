@@ -3,7 +3,7 @@ from love_letter.states import *
 
 class LoveLetterPlayRoundTask(LoveLetterTask):
     def __init__(self, round_state: LoveLetterRoundState):
-        super().__init__()
+        LoveLetterTask.__init__(self)
 
         self._round_state = round_state
 

@@ -4,7 +4,7 @@ from love_letter.states import *
 
 class LoveLetterChooseCardTask(LoveLetterTask):
     def __init__(self, player: LoveLetterPlayer, state: LoveLetterNeedingCardState):
-        super().__init__()
+        LoveLetterTask.__init__(self)
         self._effective_player = player
         self._state = state
 

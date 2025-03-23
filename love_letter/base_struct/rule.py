@@ -2,12 +2,17 @@ from .task import *
 from .action import *
 
 from love_letter.objects import *
+from love_letter.criteria import *
 
 import board_game as _board_game
 
-class LoveLetterRule(_board_game.BoardGameRule):
-    def __init__(self, task: LoveLetterTask):
-        super().__init__(task)
+import typing as _T
+
+_task_type = _T.TypeVar("_task_type", bound=LoveLetterTask)
+
+class LoveLetterRule(_T.Generic[_task_type], _board_game.BoardGameRule[LoveLetterCriteria, _task_type]):
+    def __init__(self, task: _task_type, criteria: LoveLetterCriteria):
+        _board_game.BoardGameRule.__init__(self, task, criteria)
 
     def should_be_played_again(self, context: LoveLetterGameContext) -> bool:
         """
@@ -45,7 +50,7 @@ class LoveLetterRule(_board_game.BoardGameRule):
         """
         raise ValueError('this protocol does not requires interaction')
     
-    def get_tasks(self, context: LoveLetterGameContext) -> list[LoveLetterTask]:
+    def get_tasks(self, context: LoveLetterGameContext) -> list[_task_type]:
         """
         Returns the tasks to execute.
         """
