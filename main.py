@@ -13,36 +13,7 @@ import ssl as _ssl
 from board_game import *
 
 
-class LocalClient(BoardGameClient):
-    def __init__(self):
-        BoardGameClient.__init__(self)
-    
-    def send_message(self, message: BoardGameClientMessage) -> None:
-        print("-------------------------------------------")
-        print("Received message for client", id(self), ":")
-        print(message.toJson())
-        print("-------------------------------------------")
-    
-    def interact(self, message: BoardGameClientInteraction) -> BoardGameClientResponse:
-        print("-------------------------------------------")
-        print("Received message for client", id(self), ":")
-        print(message.toJson())
-        print("-------------------------------------------")
-        
-        while True:
-            try:
-                result = json.loads(input("Waiting for an answer : "))
-            except Exception:
-                print("Cette syntax ne semble pas correct...")
-            else:
-                break
-        
-        return BoardGameClientResponse(result["name"], result["args"])
-
 async def test(args):
-    client1 = LocalClient()
-    client2 = LocalClient()
-
     player1 = LoveLetterPlayer(0, "Bob")
     player2 = LoveLetterPlayer(1, "Bill")
     player3 = LoveLetterPlayer(2, "Boule")
@@ -62,7 +33,7 @@ async def test(args):
     c = LoveLetterConfiguration(charc, roundsc, gamec)
 
     deck = LoveLetterDeck()
-    board = LoveLetterBoard([player1, player2, player3], deck)
+    board = LoveLetterBoard(players, deck)
 
     context = LoveLetterContext(c, board)
 
