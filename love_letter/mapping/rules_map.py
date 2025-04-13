@@ -1,10 +1,11 @@
 from love_letter.rules import *
+from love_letter.context import *
 
 import board_game as _board_game
 
-class LoveLetterRuleMap(_board_game.BoardGameRuleMap[LoveLetterCriteria]):
-    def __init__(self, criteria: LoveLetterCriteria):
-        _board_game.BoardGameRuleMap.__init__(self, criteria)
+class LoveLetterRuleMap(_board_game.BoardGameRuleMap[LoveLetterTask, LoveLetterContext, LoveLetterAction, LoveLetterClientResponse, LoveLetterClientInteraction]):
+    def __init__(self):
+        _board_game.BoardGameRuleMap.__init__(self)
 
         self.add_rule(LoveLetterPlayGameTask, LoveLetterGameRule)
         self.add_rule(LoveLetterPlayRoundTask, LoveLetterRoundRule)

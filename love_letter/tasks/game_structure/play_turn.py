@@ -1,5 +1,6 @@
 from love_letter.base_struct.task import *
-from love_letter.objects import *
+from love_letter.context import *
+from love_letter.states import *
 
 class LoveLetterPlayTurnTask(LoveLetterTask):
     def __init__(self, player: LoveLetterPlayer, turn_state: LoveLetterTurnState):

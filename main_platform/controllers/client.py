@@ -24,14 +24,7 @@ class DistantClient(_board_game.BoardGameClient):
     def interact(self, interaction: _board_game.BoardGameClientMessage) -> None:
         def func(resolver, rejecter):
             self._interactions.append((self.get_new_interact_id(), interaction, resolver))
-        
-    
-    async def accepts_answer(self, interaction: _board_game.BoardGameClientInteraction, result: _board_game.BoardGameClientResponse) -> bool:
-        if result.get_name() == interaction.get_name():
-            return True
-        
-        return False
-    
+            
     def messages_are_waiting(self) -> bool:
         return bool(self._messages)
     
@@ -48,15 +41,15 @@ class DistantClient(_board_game.BoardGameClient):
         
         return interaction[:2]
     
-    def resolve_interaction(self, id: int, result: dict[str, _T.Any]) -> None:
-        for began_interaction in self._began_interactions:
-            if began_interaction[0] == id:
-                self._began_interactions.remove(began_interaction)
-                
-                client_result = _board_game.BoardGameClientResponse(began_interaction[1].get_name(), result)
-                
-                began_interaction[2] (client_result)
-                return
-        
-        raise ReferenceError("no such began interaction was found")
+#    def resolve_interaction(self, id: int, result: dict[str, _T.Any]) -> None:
+#        for began_interaction in self._began_interactions:
+#            if began_interaction[0] == id:
+#                self._began_interactions.remove(began_interaction)
+#                
+#                client_result = _board_game.BoardGameClientResponse(began_interaction[1].get_name(), result)
+#                
+#                began_interaction[2] (client_result)
+#                return
+#        
+#        raise ReferenceError("no such began interaction was found")
     

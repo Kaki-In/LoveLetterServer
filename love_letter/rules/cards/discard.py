@@ -2,8 +2,10 @@ from love_letter.base_struct.rule import *
 from love_letter.actions import *
 from love_letter.tasks import *
 
+import typing as _T
+
 class LoveLetterDiscardRule(LoveLetterRule[LoveLetterDiscardTask]):
-    def execute_start(self, context: LoveLetterGameContext) -> list[LoveLetterAction]:
+    def execute_start(self, context: LoveLetterContext) -> list[LoveLetterAction]:
         task = self.get_task()
         player = task.get_effective_player()
 

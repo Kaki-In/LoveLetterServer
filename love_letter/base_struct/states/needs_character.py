@@ -1,4 +1,4 @@
-from love_letter.board import *
+from love_letter.context import *
 from .state import *
 
 import typing as _T
@@ -8,7 +8,7 @@ class LoveLetterNeedingCharacterState(LoveLetterState):
         LoveLetterState.__init__(self)
 
         self._character: _T.Optional[LoveLetterCharacter] = None
-        self._possibilities = possibilities
+        self._character_possibilities = possibilities
 
     def get_chosen_character(self) -> LoveLetterCharacter:
         if self._character is None:
@@ -23,5 +23,5 @@ class LoveLetterNeedingCharacterState(LoveLetterState):
         return self._character is not None
     
     def get_chosable_characters(self) -> list[LoveLetterCharacter]:
-        return self._possibilities.copy()
+        return self._character_possibilities.copy()
 

@@ -4,12 +4,14 @@ import random as _random
 import events as _events
 
 DECK_EVENT_NUMBER_CHANGED = 0
+DECK_EVENT_HIDDEN_TAKEN = 1
 
 class LoveLetterDeck():
     def __init__(self):
         self._cards: list[ LoveLetterCard ] = []
         self._events: _events.EventObject = _events.EventObject(
-            DECK_EVENT_NUMBER_CHANGED
+            DECK_EVENT_NUMBER_CHANGED,
+            DECK_EVENT_HIDDEN_TAKEN
         )
 
         self._hidden_card: LoveLetterCard | None = None
@@ -51,11 +53,13 @@ class LoveLetterDeck():
     
     def take_card(self) -> LoveLetterCard:
         if self._cards:
-            card = self._cards.pop()
+            card = self._cards.pop(0)
         
             self._events[ DECK_EVENT_NUMBER_CHANGED ].emit(card)
         elif self._hidden_card is not None:
             card = self._hidden_card
+            self._hidden_card = None
+            self._events[ DECK_EVENT_HIDDEN_TAKEN ].emit()
 
         else:
             raise ValueError("there is no card in this deck")

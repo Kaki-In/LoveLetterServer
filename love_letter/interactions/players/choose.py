@@ -1,5 +1,5 @@
 from love_letter.base_struct.interaction import *
-from love_letter.board import *
+from love_letter.context import *
 from love_letter.enum import *
 from love_letter.tasks import *
 from love_letter.response import *
@@ -11,9 +11,9 @@ class LoveLetterChoosePlayerInteraction(LoveLetterClientInteraction[LoveLetterCh
             'reason': self.get_task().get_reason().value
         }
     
-    def json_to_response(self, json_data) -> LoveLetterChoosePlayerResponse:
+    def json_to_response(self, json_data, context: LoveLetterContext) -> LoveLetterChoosePlayerResponse:
         return LoveLetterChoosePlayerResponse(
-            self.get_board().get_player_by_id(json_data["player"])
+            context.get_board().get_player_by_id(json_data["player"])
         )
         
 

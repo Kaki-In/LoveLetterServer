@@ -1,6 +1,6 @@
 from love_letter.base_struct.action import *
 from love_letter.enum import *
-from love_letter.objects import *
+from love_letter.context import *
 
 class LoveLetterDiscardAction(LoveLetterAction):
     def __init__(self, player: LoveLetterPlayer, card: LoveLetterCard, player_card: LOVE_LETTER_PLAYER_CARD, reason: LOVE_LETTER_DISCARD_REASON):

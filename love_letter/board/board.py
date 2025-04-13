@@ -3,13 +3,10 @@ from .deck import *
 
 import typing as _T
 
-import board_game as _board_game
 import random as _random
 
-class LoveLetterBoard(_board_game.BoardGameBoard):
+class LoveLetterBoard():
     def __init__(self, players: list[LoveLetterPlayer], deck: LoveLetterDeck):
-        _board_game.BoardGameBoard.__init__(self)
-
         players = players.copy()
         _random.shuffle(players)
 

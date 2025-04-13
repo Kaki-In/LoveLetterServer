@@ -1,6 +1,6 @@
 from love_letter.enum import *
 from love_letter.base_struct.task import *
-from love_letter.board import *
+from love_letter.context import *
 from love_letter.states import *
 
 class LoveLetterChoosePlayerTask(LoveLetterTask):

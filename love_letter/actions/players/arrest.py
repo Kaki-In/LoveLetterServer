@@ -1,5 +1,5 @@
 from love_letter.base_struct.action import *
-from love_letter.objects import *
+from love_letter.context import *
 
 class LoveLetterArrestPlayerAction(LoveLetterAction):
     def __init__(self, player: LoveLetterPlayer, arrested_player: LoveLetterPlayer, character: LoveLetterCharacter):

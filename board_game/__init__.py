@@ -1,8 +1,9 @@
-from .objects import *
 from .mapping import *
 
 from .game_handler import *
 from .tasks_queue import *
+from .clients import *
+from .enum import *
 
 from .base_struct.action import *
 from .base_struct.interaction import *

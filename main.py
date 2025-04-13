@@ -3,7 +3,7 @@
 import sys
 sys.dont_write_bytecode = True
 
-from main_platform import *
+#from main_platform import *
 from love_letter import *
 from love_letter.mapping.rules_map import *
 import json
@@ -51,8 +51,6 @@ async def test(args):
 
     charc = LOVE_LETTER_CHARACTER_CONFIGURATION_DEFAULT
 
-    criteria = LoveLetterCriteria()
-
     roundsc = LoveLetterRoundsConfiguration(
         LOVE_LETTER_ROUNDS_EQUALITY_POLICY.RANDOM
     )
@@ -61,21 +59,17 @@ async def test(args):
         None
     )
 
-    deck = LoveLetterDeck()
-
     c = LoveLetterConfiguration(charc, roundsc, gamec)
 
-    context = LoveLetterGameContext(
-        LoveLetterBoard(
-            players, deck
-        ),
-        c
-    )
+    deck = LoveLetterDeck()
+    board = LoveLetterBoard([player1, player2, player3], deck)
 
-    protocols = LoveLetterRuleMap(criteria)
+    context = LoveLetterContext(c, board)
+
+    protocols = LoveLetterRuleMap()
 
     game_handler = BoardGameHandler(context, protocols)
-    game_handler.add_main_task(LoveLetterPlayGameTask())
+    game_handler.add_main_task(LoveLetterPlayGameTask(c, board))
 
     actions = []
 
@@ -93,19 +87,21 @@ async def test(args):
 
             if type(interaction) == LoveLetterChooseCardInteraction:
                 json_result = "HAND_CARD"
-                response = interaction.json_to_response(json_result)
+                response = interaction.json_to_response(json_result, context)
             
             elif type(interaction) == LoveLetterChoosePlayerInteraction:
                 json_result = {
                     'player': 0
                 }
-                response = interaction.json_to_response(json_result)
+                response = interaction.json_to_response(json_result, context)
 
             elif type(interaction) == LoveLetterChooseCharacterInteraction:
                 json_result = {
                     'player': 0
                 }
-                response = interaction.json_to_response(json_result)
+                response = interaction.json_to_response(json_result, context)
+            else:
+                response = None
 
             game_handler.answer(response)
 

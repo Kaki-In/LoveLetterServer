@@ -4,73 +4,49 @@ from love_letter.tasks import *
 
 import random as _random
 
-class LoveLetterGameRule(LoveLetterRule):
-    def __init__(self, task: LoveLetterPlayGameTask, criteria: LoveLetterCriteria):
-        LoveLetterRule.__init__(self, task, criteria)
-
-        self._state = task.get_state()
-
-    def should_be_played_again(self, context: LoveLetterGameContext) -> bool:
-        winners = self.get_winners(context)
+class LoveLetterGameRule(LoveLetterRule[LoveLetterPlayGameTask]):
+    def should_be_played_again(self, context: LoveLetterContext) -> bool:
+        winners = self.get_task().get_state().get_winners()
         return len(winners) == 0
     
-    def execute_start(self, context: LoveLetterGameContext) -> list[LoveLetterAction]:
-        if self._state.is_initialized():
-            actual_round_state = self._state.get_round_state()
-            pass
+    def get_tasks(self, context: LoveLetterContext) -> list[LoveLetterTask]:
+        game_state = self.get_task().get_state()
+
+        if game_state.has_round_defined():
+            winners = game_state.get_actual_round().get_winners(context)
+
+            if len(winners) > 1:
+                max_cards_count = sum([card.get_character().get_value() for card in winners[0].get_discard()])
+
+                for player in winners[1:]:
+                    cards_count = sum([card.get_character().get_value() for card in player.get_discard()])
+
+                    if cards_count > max_cards_count:
+                        max_cards_count = cards_count
+                
+                winners = [player for player in winners if sum([card.get_character().get_value() for card in player.get_discard()]) == max_cards_count]
+
+            if len(winners) > 0:
+                if game_state.get_actual_round().get_player() in winners:
+                    first_player = game_state.get_actual_round().get_player()
+                else:
+                    first_player = _random.choice(winners)
+            else:
+                first_player = _random.choice(context.get_board().get_alive_players())
+
         else:
-            first_player = _random.choice(context.get_board().get_players())
-
-        self._state.initialize(LoveLetterRoundState(first_player))
-
-        return []
-    
-    def get_tasks(self, context: LoveLetterGameContext) -> list[LoveLetterTask]:
+            first_player = _random.choice(context.get_board().get_alive_players())
+        
         return [
-            LoveLetterPlayRoundTask(self._state.get_round_state()),
+            LoveLetterPlayRoundTask(LoveLetterRoundState(first_player)),
         ]
     
-    def execute_end(self, context: LoveLetterGameContext) -> list[LoveLetterAction]:
+    def execute_end(self, context: LoveLetterContext) -> list[LoveLetterAction]:
         print("Executing end of Game rule")
 
-        winners = self.get_winners(context)
+        winners = self.get_task().get_state().get_winners()
 
         return [
             LoveLetterEndGameAction(winners)
         ]
     
-    def get_winners(self, context: LoveLetterGameContext) -> list[LoveLetterPlayer]:
-        max_rounds_count = self.get_max_rounds_count(context)
-
-        board = context.get_board()
-
-        players = []
-
-        for player in board.get_players():
-            if player.get_won_rounds() >= max_rounds_count:
-                players.append(player)
-        
-        return players
-    
-    def get_max_rounds_count(self, context: LoveLetterGameContext) -> int:
-        configuration = context.get_configuration()
-        game_configuration = configuration.get_game_configuration()
-
-        if game_configuration.has_max_rounds_imposed():
-            return game_configuration.get_max_rounds()
-        
-        board = context.get_board()
-        players_count = len(board.get_players())
-
-        if   players_count == 2:
-            return 7
-        
-        elif players_count == 3:
-            return 5
-        
-        elif players_count == 4:
-            return 4
-        
-        raise ReferenceError('there is no default rounds count for this number of players')
-
-

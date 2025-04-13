@@ -1,27 +1,31 @@
 from .task import *
 from .action import *
 from .response import *
-from .criteria import *
-
-from board_game.objects import *
+from .interaction import *
+from .context import *
 
 import typing as _T
 
-_criterias_type = _T.TypeVar('_criterias_type', bound=BoardGameCriteria)
 _task_type = _T.TypeVar('_task_type', bound=BoardGameTask)
+_general_task_type = _T.TypeVar('_general_task_type', bound=BoardGameTask)
+_context_type = _T.TypeVar('_context_type', bound=BoardGameContext)
+_actions_type = _T.TypeVar("_actions_type", bound=BoardGameAction)
 
-class BoardGameRule(_T.Generic[_criterias_type, _task_type]):
-    def __init__(self, task: _task_type, criteria: _criterias_type):
-        self._criteria = criteria
+class BoardGameRule(_T.Generic[_task_type, _general_task_type, _context_type, _actions_type]):
+    """
+    This class defines the rules that must be executed when a task has to be done. 
+    """
+
+    def __init__(self, task: _task_type):
         self._task = task
     
     def get_task(self) -> _task_type:
+        """
+        Returns the task that the rule is attempting to fill. 
+        """
         return self._task
 
-    def get_criteria(self) -> _criterias_type:
-        return self._criteria
-
-    def should_be_played_again(self, context: BoardGameContext) -> bool:
+    def should_be_played_again(self, context: _context_type) -> bool:
         """
         True if the rule should be played again, False if it should not.
         This function is not called at the first execution. 
@@ -30,34 +34,19 @@ class BoardGameRule(_T.Generic[_criterias_type, _task_type]):
         """
         return False
     
-    def execute_start(self, context: BoardGameContext) -> list[BoardGameAction]:
+    def execute_start(self, context: _context_type) -> list[_actions_type]:
         """
-        Executes what to do when starting the rule
-        """
-        return []
-    
-    def execute_response(self, context: BoardGameContext, response: BoardGameClientResponse) -> list[BoardGameAction]:
-        """
-        Executes what to do for a response to an interaction
+        Executes what to do before starting the rule
         """
         return []
     
-    def execute_end(self, context: BoardGameContext) -> list[BoardGameAction]:
+    def execute_end(self, context: _context_type) -> list[_actions_type]:
         """
         Executes what to do when ending the rule
         """
         return []
     
-    def requires_players_interaction(self, context: BoardGameContext) -> bool:
-        return False
-    
-    def get_interaction_subject(self, context: BoardGameContext) -> BoardGameClientInteraction:
-        """
-        Returns the interaction that needs to be answered to continue the task
-        """
-        raise ValueError('this rule does not requires interaction')
-    
-    def get_tasks(self, context: BoardGameContext) -> list[BoardGameTask]:
+    def get_tasks(self, context: _context_type) -> list[_general_task_type]:
         """
         Returns the tasks to execute.
         """

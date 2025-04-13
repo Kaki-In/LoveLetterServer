@@ -13,8 +13,12 @@ class LoveLetterCard():
     def __gt__(self, second_card: 'LoveLetterCard') -> bool:
         return self.get_character() > second_card.get_character()
     
-    def __eq__(self, second_card: 'LoveLetterCard') -> bool:
-        return self.get_character() == second_card.get_character()
+    def __eq__(self, second_card: object) -> bool:
+        if isinstance(second_card, LoveLetterCard):
+            return self.get_character() == second_card.get_character()
+        
+        else:
+            return False
     
     def toJson(self):
         return {

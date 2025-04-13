@@ -1,5 +1,5 @@
 from love_letter.base_struct.task import *
-from love_letter.objects import *
+from love_letter.context import *
 
 class LoveLetterPlayCharacterTask(LoveLetterTask):
     def __init__(self, player: LoveLetterPlayer, character: LoveLetterCharacter):

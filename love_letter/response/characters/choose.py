@@ -1,7 +1,7 @@
 import typing as _T
 from love_letter.base_struct.response import *
 from love_letter.enum import *
-from love_letter.board import *
+from love_letter.context import *
 
 class LoveLetterChooseCharacterResponse(LoveLetterClientResponse):
     def __init__(self, character: LoveLetterCharacter):

@@ -1,5 +1,5 @@
 from love_letter.base_struct.action import *
-from love_letter.objects import *
+from love_letter.context import *
 
 class LoveLetterEndGameAction(LoveLetterAction):
     def __init__(self, winners: list[LoveLetterPlayer]):

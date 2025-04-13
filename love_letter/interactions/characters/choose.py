@@ -1,16 +1,13 @@
 import typing as _T
 
 from love_letter.base_struct.interaction import *
-from love_letter.board import *
+from love_letter.context import *
 from love_letter.response import *
 from love_letter.tasks import *
 
 class LoveLetterChooseCharacterInteraction(LoveLetterClientInteraction[LoveLetterChooseCharacterResponse, LoveLetterChooseCharacterTask]):
-    def get_player(self) -> LoveLetterPlayer:
-        return self.get_task().get_effective_player()
-    
     def toJson(self):
-        state = self.get_task().get_chosen_character_state()
+        state = self.get_task().get_state()
 
         possibilities = state.get_chosable_characters()
 
@@ -21,7 +18,7 @@ class LoveLetterChooseCharacterInteraction(LoveLetterClientInteraction[LoveLette
             ]
         }
     
-    def json_to_response(self, json_data) -> LoveLetterChooseCharacterResponse:
+    def json_to_response(self, json_data, context: LoveLetterContext) -> LoveLetterChooseCharacterResponse:
         raise NotImplementedError()
     
 

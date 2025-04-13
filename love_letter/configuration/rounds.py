@@ -1,6 +1,6 @@
 from love_letter.enum import *
 
-from love_letter.board import *
+from love_letter.context import *
 
 import typing as _T
 
